@@ -1,4 +1,4 @@
-FROM timescale/timescaledb:2.9.1-pg15
+FROM timescale/timescaledb:2.10.0-pg15
 USER root
 ENV POSTGIS_VERSION 3.3.2
 ENV POSTGIS_SHA256 2a6858d1df06de1c5f85a5b780773e92f6ba3a5dc09ac31120ac895242f5a77b
