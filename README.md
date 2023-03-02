@@ -109,13 +109,6 @@ app=# \dx
 
 You can now enjoy TimescaleDB and PostGIS!
 
-## Local development
-
-```shell
-apt update && apt install -y python3 python3-pip postgresql-12 
-pip3 install --upgrade pip-tools pip 
-```
-
 ## License and copyright
 
 This software is available under [Apache License 2.0](LICENSE).
