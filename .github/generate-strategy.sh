@@ -65,7 +65,7 @@ for version in "${postgis_versions[@]}"; do
 
 	# Build the json entry
 	entries+=(
-		"{\"name\": \"PostGIS ${version}-${postgisVersion}\", \"platforms\": \"$platforms\", \"dir\": \"TimescaleDB-PostGIS/$version\", \"file\": \"TimescaleDB-PostGIS/$version/Dockerfile\", \"version\": \"$version\", \"tags\": [\"$(join "\", \"" "${versionAliases[@]}")\"]}"
+		"{\"name\": \"TimescaleDB-PostGIS ${version}-${postgisVersion}\", \"platforms\": \"$platforms\", \"dir\": \"TimescaleDB-PostGIS/$version\", \"file\": \"TimescaleDB-PostGIS/$version/Dockerfile\", \"version\": \"$version\", \"tags\": [\"$(join "\", \"" "${versionAliases[@]}")\"]}"
 	)
 done
 
