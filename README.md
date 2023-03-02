@@ -23,7 +23,7 @@ Images are available via the
 
 ## How to use them
 
-The following example shows how you can easily create a new PostgreSQL 15
+The following example shows how you can easily create a new PostgreSQL 14
 cluster with TimescaleDB 2.10 and PostGIS 3.3 in it. All you have to do is set the `imageName`
 accordingly. Please look at the registry for a list of available images
 and select the one you need.
@@ -61,16 +61,20 @@ When the cluster is up, run the following command to verify the version of
 PostGIS that is available in the system, by connecting to the `app` database:
 
 ```console
-$ kubectl exec -ti cluster-example-1 -- psql app
+kubectl exec -ti cluster-example-1 -- psql app
 Defaulted container "postgres" out of: postgres, bootstrap-controller (init)
-psql (15.2 (Debian 15.2-1.pgdg110+1))
+psql (14.7 (Debian 14.7-1.pgdg110+1))
 Type "help" for help.
 
 app=# SELECT * FROM pg_available_extensions WHERE name ~ '^postgis' ORDER BY 1;
-           name           | default_version | installed_version |                          comment                           
---------------------------+-----------------+-------------------+------------------------------------------------------------
- postgis                  | 3.3.2           | 3.3.2             | PostGIS geometry and geography spatial types and functions
- postgis-3                | 3.3.2           |                   | PostGIS geometry and geography spatial types and functions
+           name           | default_version | installed_version |                          comment
+
+--------------------------+-----------------+-------------------+----------------------------------------------------
+--------
+ postgis                  | 3.3.2           | 3.3.2             | PostGIS geometry and geography spatial types and fu
+nctions
+ postgis-3                | 3.3.2           |                   | PostGIS geometry and geography spatial types and fu
+nctions
  postgis_raster           | 3.3.2           |                   | PostGIS raster types and functions
  postgis_raster-3         | 3.3.2           |                   | PostGIS raster types and functions
  postgis_sfcgal           | 3.3.2           |                   | PostGIS SFCGAL functions
@@ -82,10 +86,14 @@ app=# SELECT * FROM pg_available_extensions WHERE name ~ '^postgis' ORDER BY 1;
 (10 rows)
 
 app=# SELECT * FROM pg_available_extensions WHERE name ~ '^timescaledb' ORDER BY 1;
-        name         | default_version | installed_version |                                        comment                                        
----------------------+-----------------+-------------------+---------------------------------------------------------------------------------------
- timescaledb         | 2.10.0          |                   | Enables scalable inserts and complex queries for time-series data
- timescaledb_toolkit | 1.14.0          |                   | Library of analytical hyperfunctions, time-series pipelining, and other SQL utilities
+        name         | default_version | installed_version |                                        comment
+
+---------------------+-----------------+-------------------+---------------------------------------------------------
+------------------------------
+ timescaledb         | 2.10.0          | 2.10.0            | Enables scalable inserts and complex queries for time-se
+ries data
+ timescaledb_toolkit | 1.14.0          |                   | Library of analytical hyperfunctions, time-series pipeli
+ning, and other SQL utilities
 (2 rows)
 ```
 
@@ -98,7 +106,7 @@ CloudNativePG.
 ```console
 app=# \dx
                                            List of installed extensions
-          Name          | Version |   Schema   |                            Description                            
+          Name          | Version |   Schema   |                            Description
 ------------------------+---------+------------+-------------------------------------------------------------------
  fuzzystrmatch          | 1.1     | public     | determine similarities and distance between strings
  plpgsql                | 1.0     | pg_catalog | PL/pgSQL procedural language
