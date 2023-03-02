@@ -38,8 +38,8 @@ kind: Cluster
 metadata:
   name: cluster-example
 spec:
-  instances: 3
-  imageName: ghcr.io/imusmanmalik/cloudnative-pg-timescaledb-postgis-containers/timescaledb-postgis:14-3.2
+  instances: 1
+  imageName: ghcr.io/imusmanmalik/timescaledb-postgis:14-3.3
   bootstrap:
     initdb:
       postInitTemplateSQL:
@@ -48,7 +48,9 @@ spec:
         - CREATE EXTENSION postgis_topology;
         - CREATE EXTENSION fuzzystrmatch;
         - CREATE EXTENSION postgis_tiger_geocoder;
-
+  postgresql:
+    shared_preload_libraries:
+      - timescaledb
   storage:
     size: 1Gi
 ```
