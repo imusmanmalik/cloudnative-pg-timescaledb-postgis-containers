@@ -23,8 +23,8 @@ Images are available via the
 
 ## How to use them
 
-The following example shows how you can easily create a new PostgreSQL 14
-cluster with TimescaleDB 2.x and PostGIS 3.2 in it. All you have to do is set the `imageName`
+The following example shows how you can easily create a new PostgreSQL 15
+cluster with TimescaleDB 2.10 and PostGIS 3.3 in it. All you have to do is set the `imageName`
 accordingly. Please look at the registry for a list of available images
 and select the one you need.
 
