@@ -13,9 +13,8 @@ jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.REPO_GHA_PAT }}
+      - name: Checkout Code
+        uses: actions/checkout@v3
       - name: Run update script
         uses: nick-fields/retry@v2
         with:
@@ -36,7 +35,6 @@ jobs:
         id: disable_include_admins
         uses: benjefferies/branch-protection-bot@1.0.7
         with:
-          access_token: ${{ secrets.REPO_GHA_PAT }}
           branch: main
           enforce_admins: false
       - uses: EndBug/add-and-commit@v9
@@ -48,6 +46,5 @@ jobs:
         uses: benjefferies/branch-protection-bot@1.0.7
         if: ${{ always() && github.ref == 'refs/heads/main' }}
         with:
-          access_token: ${{ secrets.REPO_GHA_PAT }}
           branch: main
           enforce_admins: ${{ steps.disable_include_admins.outputs.initial_status }}
