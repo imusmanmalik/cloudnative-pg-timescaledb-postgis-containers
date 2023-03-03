@@ -23,9 +23,9 @@ barman[azure,cloud,google,snappy]==3.4.0 \
     --hash=sha256:b8f544a318e6689163d1216b1b4feb2b57bc29c052b603f911b38a842479c01c \
     --hash=sha256:d60505a9466091a6a8a5abe11c764a7827649b5eb6ebad7029e6f59a14f93ccc
     # via -r requirements.in
-boto3==1.26.82 \
-    --hash=sha256:f50c048b4f3223dd57afb6eee1189ef9a472bf0ed9b26ff9db65ec13275c4414 \
-    --hash=sha256:f618f2e8a4b9d5cb9f05d3a5628ca2afa4bcd3e8b4b8413d11dea0f4c4480b3c
+boto3==1.26.83 \
+    --hash=sha256:c07ed643aa72940f92b2c807591e1ba803c1b79d20ca129a6f8cccf846c40ff8 \
+    --hash=sha256:df81bfa4f8dfb3a645c43b7fd317f48df3e7fa402115ef21fc2f6430d73a1821
 botocore==1.29.83 \
     --hash=sha256:2e3d215b94df4e4c0ce3da250db43fb39ef7834f8f8fd19e5b223b35edb4d073 \
     --hash=sha256:b7df2a1413f32992f350dd66bc5c8747b7211b776cf6500f64aebba7eddbe4f0
