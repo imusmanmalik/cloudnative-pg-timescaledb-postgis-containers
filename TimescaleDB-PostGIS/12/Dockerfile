@@ -19,7 +19,7 @@ FROM postgis/postgis:12-3.3
 # Do not split the description, otherwise we will see a blank space in the labels
 LABEL name="PostgreSQL + TimescaleDB + PostGIS Container Images" \
       version="${PG_VERSION}" \
-      release="52" \
+      release="53" \
       summary="PostgreSQL + TimescaleDB + PostGIS Container images." \
       description="This Docker image contains PostgreSQL, TimescaleDB, PostGIS and Barman Cloud based on Postgres 12-3.3."
 
