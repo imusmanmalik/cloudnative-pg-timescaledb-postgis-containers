@@ -35,7 +35,7 @@ jobs:
       - name: Temporarily disable "include administrators" branch protection
         if: ${{ always() && github.ref == 'refs/heads/main' }}
         id: disable_include_admins
-        uses: benjefferies/branch-protection-bot@1.0.8
+        uses: benjefferies/branch-protection-bot@1.0.9
         with:
           access_token: ${{ secrets.REPO_GHA_PAT }}
           branch: main
@@ -46,7 +46,7 @@ jobs:
           author_email: usmanmalik@engineer.com
           message: 'chore: Daily Update'
       - name: Enable "include administrators" branch protection
-        uses: benjefferies/branch-protection-bot@1.0.8
+        uses: benjefferies/branch-protection-bot@1.0.9
         if: ${{ always() && github.ref == 'refs/heads/main' }}
         with:
           access_token: ${{ secrets.REPO_GHA_PAT }}
