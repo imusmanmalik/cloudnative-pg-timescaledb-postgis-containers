@@ -4,9 +4,9 @@
 #
 #    pip-compile --generate-hashes
 #
-anyio==4.1.0 \
-    --hash=sha256:56a415fbc462291813a94528a779597226619c8e78af7de0507333f700011e5f \
-    --hash=sha256:5a0bec7085176715be77df87fc66d6c9d70626bd752fcc85f57cdbee5b3760da
+anyio==4.2.0 \
+    --hash=sha256:745843b39e829e108e518c489b31dc757de7d2131d53fac32bd8df268227bfee \
+    --hash=sha256:e1875bb4b4e2de1669f4bc7869b6d3f54231cdced71605e6e64c9be77e3be50f
     # via azure-core
 argcomplete==3.2.1 \
     --hash=sha256:30891d87f3c1abe091f2142613c9d33cac84a5e15404489f033b20399b691fec \
@@ -480,6 +480,7 @@ typing-extensions==4.9.0 \
     --hash=sha256:23478f88c37f27d76ac8aee6c905017a143b0b1b886c3c9f66bc2fd94f9f5783 \
     --hash=sha256:af72aea155e91adfc61c3ae9e0e342dbc0cba726d6cba4b6c72c1f34e47291cd
     # via
+    #   anyio
     #   azure-core
     #   azure-storage-blob
 urllib3==1.26.18 \
