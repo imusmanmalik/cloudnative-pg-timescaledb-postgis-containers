@@ -4,8 +4,8 @@
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
+# You may obtain a copy of the License at
+# 
 #    http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
@@ -17,7 +17,7 @@
 FROM postgis/postgis:16-3.4
 
 # Do not split the description, otherwise we will see a blank space in the labels
-LABEL name="PostgreSQL + TimescaleDB + PostGIS Container Images" \
+LABEL name="PostgreSQL + PostGIS Container Images" \
 	version="${PG_VERSION}" \
 	release="26" \
 	summary="PostgreSQL + TimescaleDB + PostGIS Container images." \
@@ -40,7 +40,10 @@ RUN apt-get update \
 RUN set -xe; \
 	apt-get update; \
 	apt-get install -y --no-install-recommends \
-	"postgresql-${PG_MAJOR}-pgaudit" ;\
+	"postgresql-${PG_MAJOR}-pgaudit" \
+	"postgresql-${PG_MAJOR}-pg-failover-slots" \
+	"postgresql-${PG_MAJOR}-pgrouting" \
+	; \
 	rm -fr /tmp/* ; \
 	rm -rf /var/lib/apt/lists/*;
 
