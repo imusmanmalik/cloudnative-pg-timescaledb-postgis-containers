@@ -17,24 +17,24 @@
 FROM postgis/postgis:16-3.4
 
 # Do not split the description, otherwise we will see a blank space in the labels
-LABEL name="PostgreSQL + PostGIS Container Images" \
+LABEL name="PostgreSQL + TimescaleDB + PostGIS Container Images" \
 	version="${PG_VERSION}" \
-	release="26" \
+	release="18" \
 	summary="PostgreSQL + TimescaleDB + PostGIS Container images." \
-	description="This Docker image contains PostgreSQL, TimescaleDB, PostGIS and Barman Cloud based on Postgres 15-3.4."
+	description="This Docker image contains PostgreSQL, TimescaleDB, PostGIS and Barman Cloud based on Postgres 16-3.4."
 
 COPY requirements.txt /
 
 # Install timescaledb 2.x
 RUN apt-get update \
-	&& apt-get install -y lsb-release wget \
-	&& echo "deb https://packagecloud.io/timescale/timescaledb/debian/ $(lsb_release -c -s) main" | tee /etc/apt/sources.list.d/timescaledb.list \
-	&& wget --quiet -O - https://packagecloud.io/timescale/timescaledb/gpgkey | apt-key add - \
-	&& apt-get update \
-	&& apt-get install -y "timescaledb-2-postgresql-${PG_MAJOR}" \
-	&& apt-get remove -y lsb-release wget \
-	&& 	rm -fr /tmp/* \
-	&& 	rm -rf /var/lib/apt/lists/*
+    && apt-get install -y lsb-release wget \
+    && echo "deb https://packagecloud.io/timescale/timescaledb/debian/ $(lsb_release -c -s) main" | tee /etc/apt/sources.list.d/timescaledb.list \
+    && wget --quiet -O - https://packagecloud.io/timescale/timescaledb/gpgkey | apt-key add - \
+    && apt-get update \
+    && apt-get install -y "timescaledb-2-postgresql-${PG_MAJOR}" \
+    && apt-get remove -y lsb-release wget \
+    && 	rm -fr /tmp/* \
+    && 	rm -rf /var/lib/apt/lists/*
 
 # Install pgaudit
 RUN set -xe; \

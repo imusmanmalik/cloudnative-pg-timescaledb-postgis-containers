@@ -4,8 +4,8 @@
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
+# You may obtain a copy of the License at
+# 
 #    http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
@@ -18,10 +18,10 @@ FROM postgis/postgis:13-3.4
 
 # Do not split the description, otherwise we will see a blank space in the labels
 LABEL name="PostgreSQL + TimescaleDB + PostGIS Container Images" \
-      version="${PG_VERSION}" \
-      release="26" \
-      summary="PostgreSQL + TimescaleDB + PostGIS Container images." \
-      description="This Docker image contains PostgreSQL, TimescaleDB, PostGIS and Barman Cloud based on Postgres 13-3.4."
+	version="${PG_VERSION}" \
+	release="26" \
+	summary="PostgreSQL + TimescaleDB + PostGIS Container images." \
+	description="This Docker image contains PostgreSQL, TimescaleDB, PostGIS and Barman Cloud based on Postgres 13-3.4."
 
 COPY requirements.txt /
 
@@ -40,7 +40,10 @@ RUN apt-get update \
 RUN set -xe; \
 	apt-get update; \
 	apt-get install -y --no-install-recommends \
-	    "postgresql-${PG_MAJOR}-pgaudit" ;\
+	"postgresql-${PG_MAJOR}-pgaudit" \
+	"postgresql-${PG_MAJOR}-pg-failover-slots" \
+	"postgresql-${PG_MAJOR}-pgrouting" \
+	; \
 	rm -fr /tmp/* ; \
 	rm -rf /var/lib/apt/lists/*;
 
@@ -48,12 +51,12 @@ RUN set -xe; \
 RUN set -xe; \
 	apt-get update; \
 	apt-get install -y --no-install-recommends \
-		python3-pip \
-		python3-psycopg2 \
-		python3-setuptools \
+	python3-pip \
+	python3-psycopg2 \
+	python3-setuptools \
 	; \
 	pip3 install --upgrade pip; \
-# TODO: Remove --no-deps once https://github.com/pypa/pip/issues/9644 is solved
+	# TODO: Remove --no-deps once https://github.com/pypa/pip/issues/9644 is solved
 	pip3 install --no-deps -r requirements.txt; \
 	rm -rf /var/lib/apt/lists/*;
 
