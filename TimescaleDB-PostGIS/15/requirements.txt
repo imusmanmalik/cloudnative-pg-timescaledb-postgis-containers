@@ -16,16 +16,16 @@ azure-identity==1.19.0 \
 azure-storage-blob==12.24.0 \
     --hash=sha256:4f0bb4592ea79a2d986063696514c781c9e62be240f09f6397986e01755bc071 \
     --hash=sha256:eaaaa1507c8c363d6e1d1342bd549938fdf1adec9b1ada8658c8f5bf3aea844e
-barman[azure,cloud,google,snappy]==3.12.0 \
-    --hash=sha256:42ecbab235c4bbf8c4aba7fc28f17b96319c2b867c4370e2b5ee3bc1fc605f34 \
-    --hash=sha256:6e80ef4c550662aaed08accddc73422571647b86a1d9a49c5317fff4fca107c7
+barman[azure,cloud,google,snappy]==3.12.1 \
+    --hash=sha256:258ef7100717f66032402e0abe03c977089c50fc47143df5708e92aa1d772937 \
+    --hash=sha256:9dd7be219b6f74954b80cdc28f9a72f2acb923e7da65edd0f41cdc82fd32e169
     # via -r requirements.in
-boto3==1.35.76 \
-    --hash=sha256:31ddcdb6f15dace2b68f6a0f11bdb58dd3ae79b8a3ccb174ff811ef0bbf938e0 \
-    --hash=sha256:69458399f41f57a50770c8974796d96978bcca44915c260319696bb43e47dffd
-botocore==1.35.76 \
-    --hash=sha256:a75a42ae53395796b8300c5fefb2d65a8696dc40dc85e49cf3a769e0c0202b13 \
-    --hash=sha256:b4729d12d00267b3185628f83543917b6caae292385230ab464067621aa086af
+boto3==1.35.77 \
+    --hash=sha256:a09871805f8e462349a1c33c23eb413668df0bf68424e61d53518e1a7d883b2f \
+    --hash=sha256:cc819cdbccbc2d0dc185f1dcfe74cf3809489c4cae63c2e5d6a557aa0c5ab928
+botocore==1.35.77 \
+    --hash=sha256:17b778016644e9342ca3ff2f430c1d1db0c6126e9b41a57cff52ac58e7a455e0 \
+    --hash=sha256:3faa27d65841499762228902d7e215fa99a4c2fdc76c9113e1c3f339bdf685b8
     # via
     #   boto3
     #   s3transfer
@@ -342,9 +342,9 @@ cryptography==44.0.0 \
     #   azure-storage-blob
     #   msal
     #   pyjwt
-google-api-core==2.23.0 \
-    --hash=sha256:2ceb087315e6af43f256704b871d99326b1f12a9d6ce99beaedec99ba26a0ace \
-    --hash=sha256:c20100d4c4c41070cf365f1d8ddf5365915291b5eb11b83829fbd1c999b5122f
+google-api-core==2.24.0 \
+    --hash=sha256:10d82ac0fca69c82a25b3efdeefccf6f28e02ebb97925a8cce8edbfe379929d9 \
+    --hash=sha256:e255640547a597a4da010876d333208ddac417d60add22b6851a0c66a831fcaf
     # via
     #   google-cloud-core
     #   google-cloud-storage
