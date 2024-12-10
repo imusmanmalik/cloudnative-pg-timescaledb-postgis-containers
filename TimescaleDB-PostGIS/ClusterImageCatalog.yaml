@@ -1,7 +1,7 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: ClusterImageCatalog
 metadata:
-  name: postgis
+  name: timescaledb-postgis
 spec:
   images:
     - major: 12
