@@ -4,7 +4,7 @@
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
+# You may obtain a copy of the License at
 #
 #    http://www.apache.org/licenses/LICENSE-2.0
 #
@@ -28,17 +28,25 @@ if [ ${#versions[@]} -eq 0 ]; then
 fi
 versions=("${versions[@]%/}")
 
+# Update this everytime a new major release of PostgreSQL is available
+POSTGRESQL_LATEST_MAJOR_RELEASE=17
+
 # Get the last postgres base image tag and update time
 fetch_postgres_image_version() {
-    local suite="$1";
-    local item="$2";
-	curl -SsL "https://registry.hub.docker.com/v2/repositories/postgis/postgis/tags/?name=${suite}&ordering=last_updated&" | \
-	  jq -c ".results[] | select( .name | match(\"^${suite}-[0-9.]+$\"))" | \
-	  jq -r ".${item}" | \
-	  sort -r | \
-	  head -n1
-}
+	local version="$1"
+	local item="$2"
 
+	regexp="^${version}-[0-9.]+$"
+	if [[ ${version} -gt "${POSTGRESQL_LATEST_MAJOR_RELEASE}" ]]; then
+		regexp="^${version}beta[0-9]+-master$"
+	fi
+
+	curl -SsL "https://registry.hub.docker.com/v2/repositories/postgis/postgis/tags/?name=${version}&ordering=last_updated&" |
+		jq --arg regexp "$regexp" -c '.results[] | select( .name | match($regexp))' |
+		jq -r ".${item}" |
+		sort -r |
+		head -n1
+}
 
 # Get the latest Barman version
 latest_barman_version=
@@ -58,9 +66,12 @@ get_latest_barman_version() {
 #   component: the component to be updated
 #   componentVersion: the new component version to be set
 record_version() {
-	local versionFile="$1"; shift
-	local component="$1"; shift
-	local componentVersion="$1"; shift
+	local versionFile="$1"
+	shift
+	local component="$1"
+	shift
+	local componentVersion="$1"
+	shift
 
 	jq -S --arg component "${component}" \
 		--arg componentVersion "${componentVersion}" \
@@ -70,7 +81,8 @@ record_version() {
 }
 
 generate_postgres() {
-	local version="$1"; shift
+	local version="$1"
+	shift
 	versionFile="${version}/.versions.json"
 	imageReleaseVersion=1
 
@@ -79,12 +91,12 @@ generate_postgres() {
 		echo "Unable to retrieve latest postgres ${version} image version"
 		exit 1
 	fi
+
 	postgisImageLastUpdate=$(fetch_postgres_image_version "${version}" "last_updated")
 	if [ -z "$postgisImageLastUpdate" ]; then
 		echo "Unable to retrieve latest  postgis ${version} image version last update time"
 		exit 1
 	fi
-
 
 	barmanVersion=$(get_latest_barman_version)
 	if [ -z "$barmanVersion" ]; then
@@ -100,7 +112,7 @@ generate_postgres() {
 		imageReleaseVersion=$oldImageReleaseVersion
 	else
 		imageReleaseVersion=1
-		echo "{}" > "${versionFile}"
+		echo "{}" >"${versionFile}"
 		record_version "${versionFile}" "IMAGE_RELEASE_VERSION" "${imageReleaseVersion}"
 		record_version "${versionFile}" "BARMAN_VERSION" "${barmanVersion}"
 		record_version "${versionFile}" "POSTGIS_IMAGE_LAST_UPDATED" "${postgisImageLastUpdate}"
@@ -124,9 +136,9 @@ generate_postgres() {
 		record_version "${versionFile}" "BARMAN_VERSION" "${barmanVersion}"
 	fi
 
-    if [ "$oldPostgisImageVersion" != "$postgisImageVersion" ]; then
-	    echo "PostGIS base image changed from $oldPostgisImageVersion to $postgisImageVersion"
-	    record_version "${versionFile}" "IMAGE_RELEASE_VERSION" 1
+	if [ "$oldPostgisImageVersion" != "$postgisImageVersion" ]; then
+		echo "PostGIS base image changed from $oldPostgisImageVersion to $postgisImageVersion"
+		record_version "${versionFile}" "IMAGE_RELEASE_VERSION" 1
 		record_version "${versionFile}" "POSTGIS_IMAGE_VERSION" "${postgisImageVersion}"
 		imageReleaseVersion=1
 	elif [ "$newRelease" = "true" ]; then
@@ -134,21 +146,26 @@ generate_postgres() {
 		record_version "${versionFile}" "IMAGE_RELEASE_VERSION" $imageReleaseVersion
 	fi
 
+	dockerTemplate="Dockerfile.template"
+	if [[ ${version} -gt "${POSTGRESQL_LATEST_MAJOR_RELEASE}" ]]; then
+		dockerTemplate="Dockerfile-beta.template"
+	fi
+
 	cp -r src/* "$version/"
 	sed -e 's/%%POSTGIS_IMAGE_VERSION%%/'"$postgisImageVersion"'/g' \
 		-e 's/%%IMAGE_RELEASE_VERSION%%/'"$imageReleaseVersion"'/g' \
-		Dockerfile.template \
-		> "$version/Dockerfile"
+		"${dockerTemplate}" \
+		>"$version/Dockerfile"
 }
 
 update_requirements() {
 	barmanVersion=$(get_latest_barman_version)
 	# If there's a new version we need to recreate the requirements files
-	echo "barman[cloud,azure,snappy,google] == $barmanVersion" > requirements.in
+	echo "barman[cloud,azure,snappy,google] == $barmanVersion" >requirements.in
 
 	# This will take the requirements.in file and generate a file
 	# requirements.txt with the hashes for the required packages
-	pip-compile --generate-hashes 2> /dev/null
+	pip-compile --generate-hashes 2>/dev/null
 
 	# Removes psycopg from the list of packages to install
 	sed -i '/psycopg/{:a;N;/barman/!ba};/via barman/d' requirements.txt
