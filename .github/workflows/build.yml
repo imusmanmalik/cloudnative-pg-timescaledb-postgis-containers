@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - TimescaleDB-PostGIS/ClusterImageCatalog.yaml
   workflow_dispatch:
 
 env:
@@ -13,7 +15,7 @@ env:
 jobs:
   generate-jobs:
     name: Generate Jobs
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     outputs:
       strategy: ${{ steps.generate-jobs.outputs.strategy }}
     steps:
@@ -29,10 +31,11 @@ jobs:
     needs: generate-jobs
     strategy: ${{ fromJson(needs.generate-jobs.outputs.strategy) }}
     name: ${{ matrix.name }}
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     permissions:
       contents: read
       packages: write
+      security-events: write
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
@@ -69,8 +72,29 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
+    # When publishing new images from main, we should not overwrite an existing
+    # tag in order to guarantee the tag's SHA digest consistency.
+    - name: Verify primary tag is not overwritten
+      run: |
+        echo "MISSING_TAG=false" >> $GITHUB_ENV
+        # if we are not on the main branch, always push
+        if [ "${GITHUB_REF#refs/heads/}" != main ]; then
+            echo "MISSING_TAG=true" >> $GITHUB_ENV
+            exit 0
+        fi
+        IMAGE="${IMAGE_RELEASE}:${{ matrix.fullTag }}"
+        # If the primary tag already exists, skip the building phase
+        if skopeo inspect docker://${IMAGE} >/dev/null 2>/dev/null; then
+          echo "Image ${IMAGE} already exists"
+          # We still need to grab the digest to build the imageCatalog
+          echo "OLD_DIGEST=$(skopeo inspect docker://${IMAGE} --format '{{ .Digest }}')" >> $GITHUB_ENV
+        else
+          echo "MISSING_TAG=true" >> $GITHUB_ENV
+        fi
+
     - name: Build and load
       uses: docker/build-push-action@v6
+      if: ${{ env.MISSING_TAG == 'true' }}
       with:
         context: ${{ matrix.dir }}
         file: ${{ matrix.file }}
@@ -80,6 +104,7 @@ jobs:
 
     - name: Dockle scan
       uses: erzz/dockle-action@v1
+      if: ${{ env.MISSING_TAG == 'true' }}
       with:
         image: "${{ env.IMAGE_STAGING }}:${{ matrix.tags[0] }}"
         exit-code: '1'
@@ -88,10 +113,95 @@ jobs:
         accept-filenames: usr/share/cmake/Templates/Windows/Windows_TemporaryKey.pfx,etc/trusted-key.key,usr/share/doc/perl-IO-Socket-SSL/certs/server_enc.p12,usr/share/doc/perl-IO-Socket-SSL/certs/server.p12,usr/local/lib/python3.9/dist-packages/azure/core/settings.py,usr/local/lib/python3.8/site-packages/azure/core/settings.py,usr/share/postgresql-common/pgdg/apt.postgresql.org.asc,usr/local/lib/python3.7/dist-packages/azure/core/settings.py,etc/ssl/private/ssl-cert-snakeoil.key
 
     - name: Build and push
+      id: build
       uses: docker/build-push-action@v6
+      if: ${{ env.MISSING_TAG == 'true' }}
       with:
         context: ${{ matrix.dir }}
         file: ${{ matrix.file }}
         platforms: ${{ matrix.platforms }}
         push: true
         tags: ${{ env.TAGS }}
+
+    - name: Create artifact
+      run: |
+        # Set a default image
+        BASE_IMAGE=${IMAGE_STAGING}
+        if [ "${GITHUB_REF#refs/heads/}" == main ]; then
+            BASE_IMAGE=${IMAGE_RELEASE}
+        fi
+
+        DIGEST="${{ steps.build.outputs.digest }}"
+        if [[ "${{ env.MISSING_TAG }}" == "false" ]]; then
+            DIGEST="${{ env.OLD_DIGEST }}"
+        fi
+
+        IMAGE=${BASE_IMAGE}:${{ matrix.fullTag }}@${DIGEST} \
+        MAJOR=${{ matrix.version }} \
+        yq --null-input '{
+          "apiVersion": "postgresql.cnpg.io/v1",
+          "kind": "ClusterImageCatalog",
+          "metadata": {"name":"postgis"},
+          "spec": {
+            "images": [
+              {
+                "major": env(MAJOR),
+                "image": env(IMAGE)
+              }
+            ]
+          }
+        }' > ${{ matrix.version }}.yaml
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.version }}-clusterimagecatalog
+        path: ${{ matrix.version }}.yaml
+
+  image-catalog:
+    name: Generate ClusterImageCatalog
+    runs-on: ubuntu-22.04
+    needs: build
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.REPO_GHA_PAT }}
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: '*-clusterimagecatalog'
+          path: clusterimagecatalog
+          merge-multiple: true
+
+      - name: Update ClusterImageCatalog
+        run: |
+          yq eval-all '. as $item ireduce ({}; . *+ $item )' clusterimagecatalog/*.yaml > TimescaleDB-PostGIS/ClusterImageCatalog.yaml
+          cat TimescaleDB-PostGIS/ClusterImageCatalog.yaml
+
+      - name: Temporarily disable "include administrators" branch protection
+        if: ${{ always() && github.ref == 'refs/heads/main' }}
+        id: disable_include_admins
+        uses: benjefferies/branch-protection-bot@v1.1.2
+        with:
+          access_token: ${{ secrets.REPO_GHA_PAT }}
+          branch: main
+          enforce_admins: false
+
+      - name: Push ClusterImageCatalog updates
+        uses: EndBug/add-and-commit@v9
+        if: ${{ github.ref == 'refs/heads/main' }}
+        with:
+          author_name: imusmanmalik
+          author_email: usmanmalik@engineer.com
+          message: 'chore: ClusterImageCatalog update'
+          add: 'TimescaleDB-PostGIS/ClusterImageCatalog.yaml'
+
+      - name: Enable "include administrators" branch protection
+        uses: benjefferies/branch-protection-bot@v1.1.2
+        if: ${{ always() && github.ref == 'refs/heads/main' }}
+        with:
+          access_token: ${{ secrets.REPO_GHA_PAT }}
+          branch: main
+          enforce_admins: ${{ steps.disable_include_admins.outputs.initial_status }}

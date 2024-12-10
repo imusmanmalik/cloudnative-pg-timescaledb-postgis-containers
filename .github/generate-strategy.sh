@@ -10,7 +10,7 @@ set -eu
 
 # Define an optional aliases for some major versions
 declare -A aliases=(
-	[15]='latest'
+	[17]='latest'
 )
 
 GITHUB_ACTIONS=${GITHUB_ACTIONS:-false}
@@ -53,19 +53,20 @@ for version in "${postgis_versions[@]}"; do
 	# "major version - postgis version" ("postgis version": "$postgisMajorVersion.$postgisMinorVersion")
 	# "major version - postgis version - release version"
 	# i.e. "14", "latest", "14-3.2", "14-3.2-1"
+	fullTag="${version}-${postgisVersion}-${releaseVersion}"
 	versionAliases=(
 			"${version}"
 			${aliases[$version]:+"${aliases[$version]}"}
 			"${version}-${postgisVersion}"
-			"${version}-${postgisVersion}-${releaseVersion}"
-		)
+			"${fullTag}"
+	)
 
 	# Support platform for container images
 	platforms="linux/amd64,linux/arm64"
 
 	# Build the json entry
 	entries+=(
-		"{\"name\": \"TimescaleDB-PostGIS ${version}-${postgisVersion}\", \"platforms\": \"$platforms\", \"dir\": \"TimescaleDB-PostGIS/$version\", \"file\": \"TimescaleDB-PostGIS/$version/Dockerfile\", \"version\": \"$version\", \"tags\": [\"$(join "\", \"" "${versionAliases[@]}")\"]}"
+		"{\"name\": \"TimescaleDB-PostGIS ${version}-${postgisVersion}\", \"platforms\": \"$platforms\", \"dir\": \"TimescaleDB-PostGIS/$version\", \"file\": \"TimescaleDB-PostGIS/$version/Dockerfile\", \"version\": \"$version\", \"tags\": [\"$(join "\", \"" "${versionAliases[@]}")\"], \"fullTag\": \"${fullTag}\"}"
 	)
 done
 
