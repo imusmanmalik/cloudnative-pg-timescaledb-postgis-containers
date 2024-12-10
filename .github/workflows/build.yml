@@ -141,7 +141,7 @@ jobs:
         yq --null-input '{
           "apiVersion": "postgresql.cnpg.io/v1",
           "kind": "ClusterImageCatalog",
-          "metadata": {"name":"postgis"},
+          "metadata": {"name":"timescaledb-postgis"},
           "spec": {
             "images": [
               {
