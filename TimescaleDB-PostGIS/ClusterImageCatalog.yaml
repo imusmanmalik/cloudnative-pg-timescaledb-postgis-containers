@@ -1,0 +1,18 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: ClusterImageCatalog
+metadata:
+  name: postgis
+spec:
+  images:
+    - major: 12
+      image: ghcr.io/imusmanmalik/timescaledb-postgis:12-3.5-30@sha256:adc5936aa8d792753ef7161654056104c9e4e71123426ed48d8b526368e31cce
+    - major: 13
+      image: ghcr.io/imusmanmalik/timescaledb-postgis:13-3.5-30@sha256:75c72709bfd5eefee02552d80a794eb43daf1cbee550bed075a9daf2533209ce
+    - major: 14
+      image: ghcr.io/imusmanmalik/timescaledb-postgis:14-3.5-30@sha256:e185b6f74925e00d88dd1205b4610e9fededd626e93ea5f8257d7a92fca710e2
+    - major: 15
+      image: ghcr.io/imusmanmalik/timescaledb-postgis:15-3.5-30@sha256:d00a47c64406228548ae5a7fba8c2180268736c38cb4ddcfbf774a5a9eb2fa2f
+    - major: 16
+      image: ghcr.io/imusmanmalik/timescaledb-postgis:16-3.5-30@sha256:f3ef21407ea9619ab57eef9fb58d92b72c4ea7314674d8690777ffee6c288b7d
+    - major: 17
+      image: ghcr.io/imusmanmalik/timescaledb-postgis:17-3.5-30@sha256:5f944b215941a99a79356dda45a63534a738db65dbfac7bb68ba0cd89469674e

@@ -5,18 +5,24 @@ on:
     - cron: 0 0 * * *
   workflow_dispatch:
 
+env:
+  PYTHON_VERSION: "3.9"
+
 defaults:
   run:
     shell: 'bash -Eeuo pipefail -x {0}'
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    name: Run update script
+    runs-on: ubuntu-22.04
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           token: ${{ secrets.REPO_GHA_PAT }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
       - name: Run update script
         uses: nick-fields/retry@v3
         with:
