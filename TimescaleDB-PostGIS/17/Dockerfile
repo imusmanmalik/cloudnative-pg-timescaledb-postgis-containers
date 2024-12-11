@@ -18,49 +18,49 @@ FROM postgis/postgis:17-3.5
 
 # Do not split the description, otherwise we will see a blank space in the labels
 LABEL name="PostgreSQL + TimescaleDB + PostGIS Container Images" \
-    version="${PG_VERSION}" \
-    release="01" \
-    summary="PostgreSQL + TimescaleDB + PostGIS Container images." \
-    description="This Docker image contains PostgreSQL, TimescaleDB, PostGIS and Barman Cloud based on Postgres 16-3.5."
+	version="${PG_VERSION}" \
+	release="14" \
+	summary="PostgreSQL + TimescaleDB + PostGIS Container images." \
+	description="This Docker image contains PostgreSQL, TimescaleDB, PostGIS and Barman Cloud based on Postgres 17-3.5."
 
-LABEL org.opencontainers.image.description="This Docker image contains PostgreSQL, PostGIS and Barman Cloud based on Postgres 17-3.5."
+LABEL org.opencontainers.image.description="This Docker image contains PostgreSQL, PostGIS, TimescaleDB and Barman Cloud based on Postgres 17-3.5."
 
 COPY requirements.txt /
 
 # Install timescaledb 2.x
 RUN apt-get update \
-    && apt-get install -y lsb-release wget \
-    && echo "deb https://packagecloud.io/timescale/timescaledb/debian/ $(lsb_release -c -s) main" | tee /etc/apt/sources.list.d/timescaledb.list \
-    && wget --quiet -O - https://packagecloud.io/timescale/timescaledb/gpgkey | apt-key add - \
-    && apt-get update \
-    && apt-get install -y "timescaledb-2-postgresql-${PG_MAJOR}" "timescaledb-toolkit-postgresql-${PG_MAJOR}" \
-    && apt-get remove -y lsb-release wget \
-    && 	rm -fr /tmp/* \
-    && 	rm -rf /var/lib/apt/lists/*
+	&& apt-get install -y lsb-release wget \
+	&& echo "deb https://packagecloud.io/timescale/timescaledb/debian/ $(lsb_release -c -s) main" | tee /etc/apt/sources.list.d/timescaledb.list \
+	&& wget --quiet -O - https://packagecloud.io/timescale/timescaledb/gpgkey | apt-key add - \
+	&& apt-get update \
+	&& apt-get install -y "timescaledb-2-postgresql-${PG_MAJOR}" "timescaledb-toolkit-postgresql-${PG_MAJOR}" \
+	&& apt-get remove -y lsb-release wget \
+	&& 	rm -fr /tmp/* \
+	&& 	rm -rf /var/lib/apt/lists/*
 
 # Install pgaudit
 RUN set -xe; \
-    apt-get update; \
-    apt-get install -y --no-install-recommends \
-    "postgresql-${PG_MAJOR}-pgaudit" \
-    "postgresql-${PG_MAJOR}-pg-failover-slots" \
-    "postgresql-${PG_MAJOR}-pgrouting" \
-    ; \
-    rm -fr /tmp/* ; \
-    rm -rf /var/lib/apt/lists/*;
+	apt-get update; \
+	apt-get install -y --no-install-recommends \
+	"postgresql-${PG_MAJOR}-pgaudit" \
+	"postgresql-${PG_MAJOR}-pg-failover-slots" \
+	"postgresql-${PG_MAJOR}-pgrouting" \
+	; \
+	rm -fr /tmp/* ; \
+	rm -rf /var/lib/apt/lists/*;
 
 # Install barman-cloud
 RUN set -xe; \
-    apt-get update; \
-    apt-get install -y --no-install-recommends \
-    python3-pip \
-    python3-psycopg2 \
-    python3-setuptools \
-    ; \
-    pip3 install --upgrade pip; \
-    # TODO: Remove --no-deps once https://github.com/pypa/pip/issues/9644 is solved
-    pip3 install --no-deps -r requirements.txt; \
-    rm -rf /var/lib/apt/lists/*;
+	apt-get update; \
+	apt-get install -y --no-install-recommends \
+	python3-pip \
+	python3-psycopg2 \
+	python3-setuptools \
+	; \
+	pip3 install --upgrade pip; \
+	# TODO: Remove --no-deps once https://github.com/pypa/pip/issues/9644 is solved
+	pip3 install --no-deps -r requirements.txt; \
+	rm -rf /var/lib/apt/lists/*;
 
 # Change the uid of postgres to 26
 RUN usermod -u 26 postgres
