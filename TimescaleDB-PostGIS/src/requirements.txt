@@ -327,9 +327,9 @@ cryptography==44.0.0 \
     #   azure-storage-blob
     #   msal
     #   pyjwt
-google-api-core==2.24.0 \
-    --hash=sha256:10d82ac0fca69c82a25b3efdeefccf6f28e02ebb97925a8cce8edbfe379929d9 \
-    --hash=sha256:e255640547a597a4da010876d333208ddac417d60add22b6851a0c66a831fcaf
+google-api-core==2.24.1rc1 \
+    --hash=sha256:92ee3eed90a397a9f4dd13c034a36cbe7dba2a58e01e5668619847b68a527b73 \
+    --hash=sha256:d1cf8265c8b0b171a87d84adc8709a5e48147ca529d6f96d6a2be613a195eb78
     # via
     #   google-cloud-core
     #   google-cloud-storage
@@ -414,9 +414,9 @@ portalocker==2.10.1 \
     --hash=sha256:53a5984ebc86a025552264b459b46a2086e269b21823cb572f8f28ee759e45bf \
     --hash=sha256:ef1bf844e878ab08aee7e40184156e1151f228f103aa5c6bd0724cc330960f8f
     # via msal-extensions
-proto-plus==1.25.0 \
-    --hash=sha256:c91fc4a65074ade8e458e95ef8bac34d4008daa7cce4a12d6707066fca648961 \
-    --hash=sha256:fbb17f57f7bd05a68b7707e745e26528b0b3c34e378db91eef93912c54982d91
+proto-plus==1.26.0rc1 \
+    --hash=sha256:04eeceecd6a038285e2aa8996b53c045d04a568c5c48b7eaa79c097a4984a4c7 \
+    --hash=sha256:a0ad6fbc2e194dbbb813edc22ee2e509a7c38df7ecea2fd2803bce0536eaf0f4
     # via google-api-core
 protobuf==5.29.3 \
     --hash=sha256:0a18ed4a24198528f2333802eb075e59dea9d679ab7a6c5efb017a59004d849f \
