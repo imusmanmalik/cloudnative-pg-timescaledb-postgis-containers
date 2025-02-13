@@ -10,9 +10,9 @@ azure-core==1.32.0 \
     # via
     #   azure-identity
     #   azure-storage-blob
-azure-identity==1.19.0 \
-    --hash=sha256:500144dc18197d7019b81501165d4fa92225f03778f17d7ca8a2a180129a9c83 \
-    --hash=sha256:e3f6558c181692d7509f09de10cca527c7dce426776454fb97df512a46527e81
+azure-identity==1.20.0 \
+    --hash=sha256:40597210d56c83e15031b0fe2ea3b26420189e1e7f3e20bdbb292315da1ba014 \
+    --hash=sha256:5f23fc4889a66330e840bd78830287e14f3761820fe3c5f77ac875edcb9ec998
 azure-storage-blob==12.24.1 \
     --hash=sha256:052b2a1ea41725ba12e2f4f17be85a54df1129e13ea0321f5a2fcc851cbf47d4 \
     --hash=sha256:77fb823fdbac7f3c11f7d86a5892e2f85e161e8440a7489babe2195bf248f09e
@@ -20,12 +20,12 @@ barman[azure,cloud,google,snappy]==3.12.1 \
     --hash=sha256:258ef7100717f66032402e0abe03c977089c50fc47143df5708e92aa1d772937 \
     --hash=sha256:9dd7be219b6f74954b80cdc28f9a72f2acb923e7da65edd0f41cdc82fd32e169
     # via -r requirements.in
-boto3==1.36.18 \
-    --hash=sha256:084ff25af2d7bda3102d6367f5453e2e83f8cde1da73079ea144595b03cb9400 \
-    --hash=sha256:be8e32c34d7b103a64fafdd277fa1ec136733b4bbfc11dcfa597efa36a820b37
-botocore==1.36.18 \
-    --hash=sha256:7898d109affd9231c555e71fda88308c1da2db8d39e83d33eb8cb40ebf1ba82f \
-    --hash=sha256:ddadafe460e91f11677720a2fcc3ea09c4abb914de2b000da7ba46b4c97da3d7
+boto3==1.36.19 \
+    --hash=sha256:7784590369a9d545bb07b2de56b6ce4d5a5e232883a957f704c3f842caeba155 \
+    --hash=sha256:8c2c2a4ccdfe35dd2611ee1b7473dd2383948415c777e42dc4e7f1ebe371fe8c
+botocore==1.36.19 \
+    --hash=sha256:98882c106fec4c08678ea028199f7f5119550fab95d682b30846f7aae04b7bec \
+    --hash=sha256:cdf6729f601f82b1acdb9004b1f88b57cfb470f576394cdb3bbf5150f7fafb5b
     # via
     #   boto3
     #   s3transfer
@@ -386,9 +386,9 @@ google-resumable-media==2.7.2 \
     --hash=sha256:3ce7551e9fe6d99e9a126101d2536612bb73486721951e9562fee0f90c6ababa \
     --hash=sha256:5280aed4629f2b60b847b0d42f9857fd4935c11af266744df33d8074cae92fe0
     # via google-cloud-storage
-googleapis-common-protos==1.67.0rc1 \
-    --hash=sha256:3230f01d80b0e7dc857f981747df92ed69ca04d6de7c93f55ed5151ba65641b8 \
-    --hash=sha256:c17971fd2b38287b03ea5973d978ec7ae72917568f125ee2b88821f20063bb0b
+googleapis-common-protos==1.67.0 \
+    --hash=sha256:21398025365f138be356d5923e9168737d94d46a72aefee4a6110a1f23463c86 \
+    --hash=sha256:579de760800d13616f51cf8be00c876f00a9f146d3e6510e19d1f4111758b741
     # via google-api-core
 idna==3.10 \
     --hash=sha256:12f65c9b470abda6dc35cf8e63cc574b1c52b11df2c86030af0ac09b01b13ea9 \
