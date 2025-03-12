@@ -51,7 +51,12 @@ fetch_postgres_image_version() {
 # Get the latest Barman version
 latest_barman_version=
 _raw_get_latest_barman_version() {
-	curl -s https://pypi.org/pypi/barman/json | jq -r '.releases | keys[]' | sort -Vr | head -n1
+	# curl -s https://pypi.org/pypi/barman/json | jq -r '.releases | keys[]' | sort -Vr | head -n1
+	## set a fixed version of Barman to 3.12.1
+	## The latest released version of Barman 3.13.0 introduced a change
+	## in the argment list for the restore.
+	## For more information check the following issue: cloudnative-pg/cloudnative-pg#6932
+	echo "3.12.1"
 }
 get_latest_barman_version() {
 	if [ -z "$latest_barman_version" ]; then
