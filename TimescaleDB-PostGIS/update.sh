@@ -17,6 +17,21 @@
 
 set -Eeuo pipefail
 
+error_trap() {
+	local exit_code=$?
+	local line_number=$LINENO
+	local script_name=$(basename "$0")
+	local func_name=${FUNCNAME[1]:-MAIN}
+
+	echo "❌ ERROR in $script_name at line $line_number"
+	echo "   Function: $func_name"
+	echo "   Command: '$BASH_COMMAND'"
+	echo "   Exit code: $exit_code"
+	exit $exit_code
+}
+
+trap error_trap ERR
+
 cd "$(dirname "$(readlink -f "$BASH_SOURCE")")"
 
 versions=("$@")
@@ -56,7 +71,7 @@ _raw_get_latest_barman_version() {
 	## The latest released version of Barman 3.13.0 introduced a change
 	## in the argment list for the restore.
 	## For more information check the following issue: cloudnative-pg/cloudnative-pg#6932
-	echo "3.12.1"
+	echo "3.13.3"
 }
 get_latest_barman_version() {
 	if [ -z "$latest_barman_version" ]; then
