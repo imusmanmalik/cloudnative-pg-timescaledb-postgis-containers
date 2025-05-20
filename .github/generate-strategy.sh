@@ -18,7 +18,6 @@ GITHUB_ACTIONS=${GITHUB_ACTIONS:-false}
 cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}/..")")"
 BASE_DIRECTORY="$(pwd)"
 
-
 # Retrieve the PostgreSQL versions for TimescaleDB-PostGIS
 cd ${BASE_DIRECTORY}/TimescaleDB-PostGIS
 for version in */; do
@@ -28,7 +27,10 @@ done
 postgis_versions=("${postgis_versions[@]%/}")
 
 # Sort the version numbers with highest first
-mapfile -t postgis_versions < <(IFS=$'\n'; sort -rV <<< "${postgis_versions[*]}")
+mapfile -t postgis_versions < <(
+	IFS=$'\n'
+	sort -rV <<<"${postgis_versions[*]}"
+)
 
 # prints "$2$1$3$1...$N"
 join() {
@@ -55,14 +57,18 @@ for version in "${postgis_versions[@]}"; do
 	# i.e. "14", "latest", "14-3.2", "14-3.2-1"
 	fullTag="${version}-${postgisVersion}-${releaseVersion}"
 	versionAliases=(
-			"${version}"
-			${aliases[$version]:+"${aliases[$version]}"}
-			"${version}-${postgisVersion}"
-			"${fullTag}"
+		"${version}"
+		${aliases[$version]:+"${aliases[$version]}"}
+		"${version}-${postgisVersion}"
+		"${fullTag}"
 	)
 
 	# Support platform for container images
 	platforms="linux/amd64,linux/arm64"
+	# PostgreSQL 13 base image (postgis/postgis:13-3.5) only supports amd64 architecture
+	if [ "$version" = "13" ]; then
+		platforms="linux/amd64"
+	fi
 
 	# Build the json entry
 	entries+=(
@@ -75,5 +81,5 @@ strategy="{\"fail-fast\": false, \"matrix\": {\"include\": [$(join ', ' "${entri
 jq -C . <<<"$strategy" # sanity check / debugging aid
 
 if [[ "$GITHUB_ACTIONS" == "true" ]]; then
-	echo "strategy=$(jq -c . <<<"$strategy")" >> $GITHUB_OUTPUT
+	echo "strategy=$(jq -c . <<<"$strategy")" >>$GITHUB_OUTPUT
 fi
