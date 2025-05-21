@@ -19,7 +19,7 @@ FROM postgis/postgis:13-3.5
 # Do not split the description, otherwise we will see a blank space in the labels
 LABEL name="PostgreSQL + TimescaleDB + PostGIS Container Images" \
 	version="${PG_VERSION}" \
-	release="46" \
+	release="47" \
 	summary="PostgreSQL + TimescaleDB + PostGIS Container images." \
 	description="This Docker image contains PostgreSQL, TimescaleDB, PostGIS and Barman Cloud based on Postgres 13-3.5."
 
@@ -41,6 +41,11 @@ RUN apt-get update \
 # Install pgaudit
 RUN set -xe; \
 	apt-get update; \
+	if apt list --upgradable 2>/dev/null | grep -q '^postgres'; then \
+		echo "ERROR: Upgradable postgres packages found!"; \
+		apt list --upgradable 2>/dev/null | grep '^postgres'; \
+		exit 1; \
+	fi; \
 	apt-get install -y --no-install-recommends \
 	"postgresql-${PG_MAJOR}-pgaudit" \
 	"postgresql-${PG_MAJOR}-pg-failover-slots" \

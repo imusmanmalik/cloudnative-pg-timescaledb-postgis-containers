@@ -1,1 +1,1 @@
-barman[cloud,azure,snappy,google,zstandard,lz4] == 3.12.1
+barman[cloud,azure,snappy,google,zstandard,lz4] == 3.13.3
