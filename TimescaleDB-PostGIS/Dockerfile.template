@@ -41,11 +41,7 @@ RUN apt-get update \
 # Install pgaudit
 RUN set -xe; \
 	apt-get update; \
-	if apt list --upgradable 2>/dev/null | grep -q '^postgres'; then \
-		echo "ERROR: Upgradable postgres packages found!"; \
-		apt list --upgradable 2>/dev/null | grep '^postgres'; \
-		exit 1; \
-	fi; \
+	apt-mark hold "postgresql-${PG_MAJOR}" "postgresql-client-${PG_MAJOR}" postgresql-client-common postgresql-common; \
 	apt-get install -y --no-install-recommends \
 	"postgresql-${PG_MAJOR}-pgaudit" \
 	"postgresql-${PG_MAJOR}-pg-failover-slots" \
