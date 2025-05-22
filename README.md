@@ -12,7 +12,7 @@ These images are built on top of the [PostGIS image](https://hub.docker.com/r/po
 - Barman Cloud
 - PGAudit
 
-> **Note:** PostgreSQL 13 images are only available for `amd64` architecture due to limitations in the base PostGIS image. All other PostgreSQL versions (12, 14-17) support both `amd64` and `arm64` architectures.
+> **Note:** Platform support (amd64/arm64) is automatically detected for each PostgreSQL version by querying Docker Hub's API. If a specific version doesn't support arm64 architecture, the build process will automatically fall back to amd64-only builds. This ensures that images are built for all supported architectures without manual configuration.
 
 Barman Cloud is distributed by EnterpriseDB under the
 [GNU GPL 3 License](https://github.com/EnterpriseDB/barman/blob/master/LICENSE).
