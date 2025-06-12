@@ -350,9 +350,9 @@ cryptography==45.0.4 \
     #   azure-storage-blob
     #   msal
     #   pyjwt
-google-api-core==2.25.0 \
-    --hash=sha256:1db79d1281dcf9f3d10023283299ba38f3dc9f639ec41085968fd23e5bcf512e \
-    --hash=sha256:9b548e688702f82a34ed8409fb8a6961166f0b7795032f0be8f48308dff4333a
+google-api-core==2.25.1rc0 \
+    --hash=sha256:389ab4fa7ad291be40ee17c9c9ba8be153dd6fa2b49e689aa3d79daeff80bbe5 \
+    --hash=sha256:fb7bfbec18839f94c1d425d544456095bc76a4cc284d6ab863c9409b9d2e957b
     # via
     #   google-cloud-core
     #   google-cloud-storage
