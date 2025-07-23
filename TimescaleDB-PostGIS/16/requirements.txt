@@ -472,9 +472,9 @@ lz4==4.4.4 \
     --hash=sha256:f4c21648d81e0dda38b4720dccc9006ae33b0e9e7ffe88af6bf7d4ec124e2fba \
     --hash=sha256:f5024d3ca2383470f7c4ef4d0ed8eabad0b22b23eeefde1c192cf1a38d5e9f78 \
     --hash=sha256:fff9f3a1ed63d45cb6514bfb8293005dc4141341ce3500abdfeb76124c0b9b2e
-msal==1.32.3 \
-    --hash=sha256:5eea038689c78a5a70ca8ecbe1245458b55a857bd096efb6989c69ba15985d35 \
-    --hash=sha256:b2798db57760b1961b142f027ffb7c8169536bf77316e99a0df5c4aaebb11569
+msal==1.33.0 \
+    --hash=sha256:836ad80faa3e25a7d71015c990ce61f704a87328b1e73bcbb0623a18cbf17510 \
+    --hash=sha256:c0cd41cecf8eaed733ee7e3be9e040291eba53b0f262d3ae9c58f38b04244273
     # via
     #   azure-identity
     #   msal-extensions
