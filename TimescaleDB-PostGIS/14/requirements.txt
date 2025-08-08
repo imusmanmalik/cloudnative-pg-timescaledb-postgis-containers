@@ -10,9 +10,9 @@ azure-core==1.35.0 \
     # via
     #   azure-identity
     #   azure-storage-blob
-azure-identity==1.23.1 \
-    --hash=sha256:226c1ef982a9f8d5dcf6e0f9ed35eaef2a4d971e7dd86317e9b9d52e70a035e4 \
-    --hash=sha256:7eed28baa0097a47e3fb53bd35a63b769e6b085bb3cb616dfce2b67f28a004a1
+azure-identity==1.24.0 \
+    --hash=sha256:6c3a40b2a70af831e920b89e6421e8dcd4af78a0cb38b9642d86c67643d4930c \
+    --hash=sha256:9e04997cde0ab02ed66422c74748548e620b7b29361c72ce622acab0267ff7c4
 azure-storage-blob==12.26.0 \
     --hash=sha256:5dd7d7824224f7de00bfeb032753601c982655173061e242f13be6e26d78d71f \
     --hash=sha256:8c5631b8b22b4f53ec5fff2f3bededf34cfef111e2af613ad42c9e6de00a77fe
