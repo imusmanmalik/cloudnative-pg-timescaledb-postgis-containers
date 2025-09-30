@@ -29,9 +29,9 @@ botocore==1.35.99 \
     # via
     #   boto3
     #   s3transfer
-cachetools==5.5.2 \
-    --hash=sha256:1a661caa9175d26759571b2e19580f9d6393969e5dfca11fdb1f947a23e640d4 \
-    --hash=sha256:d26a22bcc62eb95c3beabd9f1ee5e820d3d2704fe2967cbe350e20c8ffcd3f0a
+cachetools==6.2.0 \
+    --hash=sha256:1c76a8960c0041fcc21097e357f882197c79da0dbff766e7317890a65d7d8ba6 \
+    --hash=sha256:38b328c0889450f05f5e120f56ab68c8abaf424e1275522b138ffc93253f7e32
     # via google-auth
 certifi==2025.8.3 \
     --hash=sha256:e564105f78ded564e3ae7c923924435e1daa7463faeab5bb932bc53ffae63407 \
@@ -407,9 +407,9 @@ google-api-core==2.25.1 \
     # via
     #   google-cloud-core
     #   google-cloud-storage
-google-auth==2.40.3 \
-    --hash=sha256:1370d4593e86213563547f97a92752fc658456fe4514c809544f330fed45a7ca \
-    --hash=sha256:500c3a29adedeb36ea9cf24b8d10858e152f2412e3ca37829b3fa18e33d63b77
+google-auth==2.41.0 \
+    --hash=sha256:c9d7b534ea4a5d9813c552846797fafb080312263cd4994d6622dd50992ae101 \
+    --hash=sha256:d8bed9b53ab63b7b0374656b8e1bef051f95bb14ecc0cf21ba49de7911d62e09
     # via
     #   google-api-core
     #   google-cloud-core
