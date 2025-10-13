@@ -29,9 +29,9 @@ botocore==1.35.99 \
     # via
     #   boto3
     #   s3transfer
-cachetools==6.2.0 \
-    --hash=sha256:1c76a8960c0041fcc21097e357f882197c79da0dbff766e7317890a65d7d8ba6 \
-    --hash=sha256:38b328c0889450f05f5e120f56ab68c8abaf424e1275522b138ffc93253f7e32
+cachetools==6.2.1 \
+    --hash=sha256:09868944b6dde876dfd44e1d47e18484541eaf12f26f29b7af91b26cc892d701 \
+    --hash=sha256:3f391e4bd8f8bf0931169baf7456cc822705f4e2a31f840d218f445b9a854201
     # via google-auth
 certifi==2025.10.5 \
     --hash=sha256:0f212c2744a9bb6de0c56639a6f68afe01ecd92d91f14ae897c4fe7bbeeef0de \
@@ -467,9 +467,9 @@ googleapis-common-protos==1.70.0 \
     --hash=sha256:0e1b44e0ea153e6594f9f394fef15193a68aaaea2d843f83e2742717ca753257 \
     --hash=sha256:b8bfcca8c25a2bb253e0e0b0adaf8c00773e5e6af6fd92397576680b807e0fd8
     # via google-api-core
-idna==3.10 \
-    --hash=sha256:12f65c9b470abda6dc35cf8e63cc574b1c52b11df2c86030af0ac09b01b13ea9 \
-    --hash=sha256:946d195a0d259cbba61165e88e65941f16e9b36ea6ddb97f00452bae8b1287d3
+idna==3.11 \
+    --hash=sha256:771a87f49d9defaf64091e6e6fe9c18d4833f140bd19464795bc32d966ca37ea \
+    --hash=sha256:795dafcc9c04ed0c1fb032c2aa73654d8e8c5023a7df64a53f39190ada629902
     # via requests
 isodate==0.7.2 \
     --hash=sha256:28009937d8031054830160fce6d409ed342816b543597cece116d966c6d99e15 \
