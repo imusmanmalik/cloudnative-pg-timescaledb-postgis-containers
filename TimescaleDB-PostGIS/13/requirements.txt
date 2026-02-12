@@ -4,15 +4,15 @@
 #
 #    pip-compile --generate-hashes
 #
-azure-core==1.38.0 \
-    --hash=sha256:8194d2682245a3e4e3151a667c686464c3786fed7918b394d035bdcd61bb5993 \
-    --hash=sha256:ab0c9b2cd71fecb1842d52c965c95285d3cfb38902f6766e4a471f1cd8905335
+azure-core==1.38.1 \
+    --hash=sha256:69f08ee3d55136071b7100de5b198994fc1c5f89d2b91f2f43156d20fcf200a4 \
+    --hash=sha256:9317db1d838e39877eb94a2240ce92fa607db68adf821817b723f0d679facbf6
     # via
     #   azure-identity
     #   azure-storage-blob
-azure-identity==1.25.1 \
-    --hash=sha256:87ca8328883de6036443e1c37b40e8dc8fb74898240f61071e09d2e369361456 \
-    --hash=sha256:e9edd720af03dff020223cd269fa3a61e8f345ea75443858273bcb44844ab651
+azure-identity==1.25.2 \
+    --hash=sha256:030dbaa720266c796221c6cdbd1999b408c079032c919fef725fcc348a540fe9 \
+    --hash=sha256:1b40060553d01a72ba0d708b9a46d0f61f56312e215d8896d836653ffdc6753d
 azure-storage-blob==12.28.0 \
     --hash=sha256:00fb1db28bf6a7b7ecaa48e3b1d5c83bfadacc5a678b77826081304bd87d6461 \
     --hash=sha256:e7d98ea108258d29aa0efbfd591b2e2075fa1722a2fae8699f0b3c9de11eff41
