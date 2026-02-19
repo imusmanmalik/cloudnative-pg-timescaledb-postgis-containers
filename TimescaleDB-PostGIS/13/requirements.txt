@@ -4,9 +4,9 @@
 #
 #    pip-compile --generate-hashes
 #
-azure-core==1.38.1 \
-    --hash=sha256:69f08ee3d55136071b7100de5b198994fc1c5f89d2b91f2f43156d20fcf200a4 \
-    --hash=sha256:9317db1d838e39877eb94a2240ce92fa607db68adf821817b723f0d679facbf6
+azure-core==1.38.2 \
+    --hash=sha256:074806c75cf239ea284a33a66827695ef7aeddac0b4e19dda266a93e4665ead9 \
+    --hash=sha256:67562857cb979217e48dc60980243b61ea115b77326fa93d83b729e7ff0482e7
     # via
     #   azure-identity
     #   azure-storage-blob
@@ -427,9 +427,9 @@ cryptography==46.0.5 \
     #   google-auth
     #   msal
     #   pyjwt
-google-api-core==2.29.0 \
-    --hash=sha256:84181be0f8e6b04006df75ddfe728f24489f0af57c96a529ff7cf45bc28797f7 \
-    --hash=sha256:d30bc60980daa36e314b5d5a3e5958b0200cb44ca8fa1be2b614e932b75a3ea9
+google-api-core==2.30.0 \
+    --hash=sha256:02edfa9fab31e17fc0befb5f161b3bf93c9096d99aed584625f38065c511ad9b \
+    --hash=sha256:80be49ee937ff9aba0fd79a6eddfde35fe658b9953ab9b79c57dd7061afa8df5
     # via
     #   google-cloud-core
     #   google-cloud-storage
