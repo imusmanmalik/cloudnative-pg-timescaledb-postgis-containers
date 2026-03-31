@@ -443,9 +443,9 @@ cryptography==46.0.6 \
     #   google-auth
     #   msal
     #   pyjwt
-google-api-core==2.30.0 \
-    --hash=sha256:02edfa9fab31e17fc0befb5f161b3bf93c9096d99aed584625f38065c511ad9b \
-    --hash=sha256:80be49ee937ff9aba0fd79a6eddfde35fe658b9953ab9b79c57dd7061afa8df5
+google-api-core==2.30.1 \
+    --hash=sha256:3be893babbb54a89c6807b598383ddf212112130e3d24d06c681b5d18f082e08 \
+    --hash=sha256:7304ef3bd7e77fd26320a36eeb75868f9339532bfea21694964f4765b37574ee
     # via
     #   google-cloud-core
     #   google-cloud-storage
@@ -456,9 +456,9 @@ google-auth==2.49.1 \
     #   google-api-core
     #   google-cloud-core
     #   google-cloud-storage
-google-cloud-core==2.5.0 \
-    --hash=sha256:67d977b41ae6c7211ee830c7912e41003ea8194bff15ae7d72fd6f51e57acabc \
-    --hash=sha256:7c1b7ef5c92311717bd05301aa1a91ffbc565673d3b0b4163a52d8413a186963
+google-cloud-core==2.5.1 \
+    --hash=sha256:3dc94bdec9d05a31d9f355045ed0f369fbc0d8c665076c734f065d729800f811 \
+    --hash=sha256:ea62cdf502c20e3e14be8a32c05ed02113d7bef454e40ff3fab6fe1ec9f1f4e7
     # via google-cloud-storage
 google-cloud-storage==3.9.0 \
     --hash=sha256:2dce75a9e8b3387078cbbdad44757d410ecdb916101f8ba308abf202b6968066 \
@@ -500,9 +500,9 @@ google-crc32c==1.8.0 \
     # via
     #   google-cloud-storage
     #   google-resumable-media
-google-resumable-media==2.8.0 \
-    --hash=sha256:dd14a116af303845a8d932ddae161a26e86cc229645bc98b39f026f9b1717582 \
-    --hash=sha256:f1157ed8b46994d60a1bc432544db62352043113684d4e030ee02e77ebe9a1ae
+google-resumable-media==2.8.2 \
+    --hash=sha256:82b6d8ccd11765268cdd2a2123f417ec806b8eef3000a9a38dfe3033da5fb220 \
+    --hash=sha256:f3354a182ebd193ae3f42e3ef95e6c9b10f128320de23ac7637236713b1acd70
     # via google-cloud-storage
 googleapis-common-protos==1.73.1 \
     --hash=sha256:13114f0e9d2391756a0194c3a8131974ed7bffb06086569ba193364af59163b6 \
