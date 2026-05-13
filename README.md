@@ -23,12 +23,22 @@ PGAudit is distributed under the
 Images are available via the
 [GitHub Container Registry](https://github.com/imusmanmalik/cloudnative-pg-timescaledb-postgis-containers/pkgs/container/timescaledb-postgis).
 
+## Versioning note
+
+Prefer full image tags such as `17-3.5-115` over rolling tags such as `17`
+or `17-3.5` for production clusters. Rolling tags can move when PostgreSQL,
+PostGIS, TimescaleDB, or Barman packages change.
+
+The current legacy build installs TimescaleDB from the TimescaleDB apt
+repository without pinning the apt package version in the image tag. See
+[MAINTENANCE.md](MAINTENANCE.md) for the planned versioning strategy.
+
 ## How to use them
 
-The following example shows how you can easily create a new PostgreSQL 14
-cluster with TimescaleDB 2.10 and PostGIS 3.3 in it. All you have to do is set the `imageName`
-accordingly. Please look at the registry for a list of available images
-and select the one you need.
+The following example shows how you can create a PostgreSQL cluster with
+TimescaleDB and PostGIS. Set `imageName` to the exact image tag you want to
+run. Please look at the registry for a list of available images and select the
+one you need.
 
 Create a YAML manifest. For example, you can put the YAML below into a file
 named `timescaledb-postgis.yaml` (any name is fine). (Please refer to
@@ -41,7 +51,7 @@ metadata:
   name: cluster-example
 spec:
   instances: 1
-  imageName: ghcr.io/imusmanmalik/timescaledb-postgis:14-3.3
+  imageName: ghcr.io/imusmanmalik/timescaledb-postgis:17-3.5-115
   bootstrap:
     initdb:
       postInitTemplateSQL:
