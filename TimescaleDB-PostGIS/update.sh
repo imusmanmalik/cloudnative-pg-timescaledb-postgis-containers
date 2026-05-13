@@ -4,7 +4,7 @@
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
+# You may obtain a copy of the License at
 #
 #    http://www.apache.org/licenses/LICENSE-2.0
 #
@@ -46,25 +46,7 @@ versions=("${versions[@]%/}")
 # Update this everytime a new major release of PostgreSQL is available
 POSTGRESQL_LATEST_MAJOR_RELEASE=17
 
-# TimescaleDB packages are pinned per PostgreSQL major to avoid pulling a
-# binary built against a newer PostgreSQL minor than the base image.
-declare -A TIMESCALEDB_VERSION_PINS=(
-	[12]="2.11.2~debian11"
-	[13]="2.15.3~debian11"
-	[14]="2.19.3~debian11"
-	[15]="2.22.0~debian11"
-	[16]="2.22.0~debian11"
-	[17]="2.21.3~debian11"
-)
-
-declare -A TIMESCALEDB_TOOLKIT_VERSION_PINS=(
-	[12]="1:1.19.0~debian11"
-	[13]="1:1.19.0~debian11"
-	[14]="1:1.19.0~debian11"
-	[15]="1:1.22.0~debian11"
-	[16]="1:1.22.0~debian11"
-	[17]="1:1.22.0~debian11"
-)
+TIMESCALEDB_PINS_FILE="timescaledb-pins.json"
 
 # Get the last postgres base image tag and update time
 fetch_postgres_image_version() {
@@ -102,20 +84,26 @@ get_latest_barman_version() {
 
 get_timescaledb_version() {
 	local version="$1"
-	if [ -z "${TIMESCALEDB_VERSION_PINS[$version]:-}" ]; then
+	local pin
+
+	pin=$(jq -r --arg version "$version" '.[$version].timescaledb.version // ""' "$TIMESCALEDB_PINS_FILE")
+	if [ -z "$pin" ]; then
 		echo "No TimescaleDB version pin configured for PostgreSQL ${version}" >&2
 		exit 1
 	fi
-	echo "${TIMESCALEDB_VERSION_PINS[$version]}"
+	echo "$pin"
 }
 
 get_timescaledb_toolkit_version() {
 	local version="$1"
-	if [ -z "${TIMESCALEDB_TOOLKIT_VERSION_PINS[$version]:-}" ]; then
+	local pin
+
+	pin=$(jq -r --arg version "$version" '.[$version].toolkit.version // ""' "$TIMESCALEDB_PINS_FILE")
+	if [ -z "$pin" ]; then
 		echo "No TimescaleDB Toolkit version pin configured for PostgreSQL ${version}" >&2
 		exit 1
 	fi
-	echo "${TIMESCALEDB_TOOLKIT_VERSION_PINS[$version]}"
+	echo "$pin"
 }
 
 # record_version(versionFile, component, componentVersion)

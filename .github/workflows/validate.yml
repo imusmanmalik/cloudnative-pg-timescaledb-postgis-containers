@@ -1,0 +1,51 @@
+name: Validate
+
+on:
+  pull_request:
+    paths:
+      - ".github/generate-strategy.sh"
+      - ".github/scripts/**"
+      - ".github/workflows/validate.yml"
+      - "TimescaleDB-PostGIS/**"
+      - "renovate.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Shell syntax
+        run: |
+          bash -n .github/generate-strategy.sh
+          bash -n .github/scripts/changed-majors.sh
+          bash -n .github/scripts/smoke-image.sh
+          bash -n .github/scripts/validate-images.sh
+          bash -n .github/scripts/verify-package-pins.sh
+          bash -n TimescaleDB-PostGIS/sync-timescaledb-pins.sh
+          bash -n TimescaleDB-PostGIS/update.sh
+
+      - name: Verify version metadata
+        run: |
+          jq -e . renovate.json
+          jq -e . TimescaleDB-PostGIS/timescaledb-pins.json
+          jq -e . TimescaleDB-PostGIS/[0-9]*/.versions.json >/dev/null
+
+      - name: Verify package pins
+        run: .github/scripts/verify-package-pins.sh
+
+      - name: Generate build strategy
+        run: bash .github/generate-strategy.sh
+
+      - name: Validate changed images
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+        run: .github/scripts/validate-images.sh "$BASE_SHA"
