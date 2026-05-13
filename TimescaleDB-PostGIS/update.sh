@@ -46,6 +46,26 @@ versions=("${versions[@]%/}")
 # Update this everytime a new major release of PostgreSQL is available
 POSTGRESQL_LATEST_MAJOR_RELEASE=17
 
+# TimescaleDB packages are pinned per PostgreSQL major to avoid pulling a
+# binary built against a newer PostgreSQL minor than the base image.
+declare -A TIMESCALEDB_VERSION_PINS=(
+	[12]="2.11.2~debian11"
+	[13]="2.15.3~debian11"
+	[14]="2.19.3~debian11"
+	[15]="2.22.0~debian11"
+	[16]="2.22.0~debian11"
+	[17]="2.21.3~debian11"
+)
+
+declare -A TIMESCALEDB_TOOLKIT_VERSION_PINS=(
+	[12]="1:1.19.0~debian11"
+	[13]="1:1.19.0~debian11"
+	[14]="1:1.19.0~debian11"
+	[15]="1:1.22.0~debian11"
+	[16]="1:1.22.0~debian11"
+	[17]="1:1.22.0~debian11"
+)
+
 # Get the last postgres base image tag and update time
 fetch_postgres_image_version() {
 	local version="$1"
@@ -78,6 +98,24 @@ get_latest_barman_version() {
 		latest_barman_version=$(_raw_get_latest_barman_version)
 	fi
 	echo "$latest_barman_version"
+}
+
+get_timescaledb_version() {
+	local version="$1"
+	if [ -z "${TIMESCALEDB_VERSION_PINS[$version]:-}" ]; then
+		echo "No TimescaleDB version pin configured for PostgreSQL ${version}" >&2
+		exit 1
+	fi
+	echo "${TIMESCALEDB_VERSION_PINS[$version]}"
+}
+
+get_timescaledb_toolkit_version() {
+	local version="$1"
+	if [ -z "${TIMESCALEDB_TOOLKIT_VERSION_PINS[$version]:-}" ]; then
+		echo "No TimescaleDB Toolkit version pin configured for PostgreSQL ${version}" >&2
+		exit 1
+	fi
+	echo "${TIMESCALEDB_TOOLKIT_VERSION_PINS[$version]}"
 }
 
 # record_version(versionFile, component, componentVersion)
@@ -124,11 +162,16 @@ generate_postgres() {
 		exit 1
 	fi
 
+	timescaledbVersion=$(get_timescaledb_version "${version}")
+	timescaledbToolkitVersion=$(get_timescaledb_toolkit_version "${version}")
+
 	if [ -f "${versionFile}" ]; then
 		oldImageReleaseVersion=$(jq -r '.IMAGE_RELEASE_VERSION' "${versionFile}")
 		oldBarmanVersion=$(jq -r '.BARMAN_VERSION' "${versionFile}")
 		oldPostgisImageLastUpdate=$(jq -r '.POSTGIS_IMAGE_LAST_UPDATED' "${versionFile}")
 		oldPostgisImageVersion=$(jq -r '.POSTGIS_IMAGE_VERSION' "${versionFile}")
+		oldTimescaledbVersion=$(jq -r '.TIMESCALEDB_VERSION // ""' "${versionFile}")
+		oldTimescaledbToolkitVersion=$(jq -r '.TIMESCALEDB_TOOLKIT_VERSION // ""' "${versionFile}")
 		imageReleaseVersion=$oldImageReleaseVersion
 	else
 		imageReleaseVersion=1
@@ -137,6 +180,8 @@ generate_postgres() {
 		record_version "${versionFile}" "BARMAN_VERSION" "${barmanVersion}"
 		record_version "${versionFile}" "POSTGIS_IMAGE_LAST_UPDATED" "${postgisImageLastUpdate}"
 		record_version "${versionFile}" "POSTGIS_IMAGE_VERSION" "${postgisImageVersion}"
+		record_version "${versionFile}" "TIMESCALEDB_VERSION" "${timescaledbVersion}"
+		record_version "${versionFile}" "TIMESCALEDB_TOOLKIT_VERSION" "${timescaledbToolkitVersion}"
 		return
 	fi
 
@@ -154,6 +199,20 @@ generate_postgres() {
 		echo "Barman changed from $oldBarmanVersion to $barmanVersion"
 		newRelease="true"
 		record_version "${versionFile}" "BARMAN_VERSION" "${barmanVersion}"
+	fi
+
+	# Detect an update of TimescaleDB
+	if [ "$oldTimescaledbVersion" != "$timescaledbVersion" ]; then
+		echo "TimescaleDB changed from $oldTimescaledbVersion to $timescaledbVersion"
+		newRelease="true"
+		record_version "${versionFile}" "TIMESCALEDB_VERSION" "${timescaledbVersion}"
+	fi
+
+	# Detect an update of TimescaleDB Toolkit
+	if [ "$oldTimescaledbToolkitVersion" != "$timescaledbToolkitVersion" ]; then
+		echo "TimescaleDB Toolkit changed from $oldTimescaledbToolkitVersion to $timescaledbToolkitVersion"
+		newRelease="true"
+		record_version "${versionFile}" "TIMESCALEDB_TOOLKIT_VERSION" "${timescaledbToolkitVersion}"
 	fi
 
 	if [ "$oldPostgisImageVersion" != "$postgisImageVersion" ]; then
@@ -174,6 +233,8 @@ generate_postgres() {
 	cp -r src/* "$version/"
 	sed -e 's/%%POSTGIS_IMAGE_VERSION%%/'"$postgisImageVersion"'/g' \
 		-e 's/%%IMAGE_RELEASE_VERSION%%/'"$imageReleaseVersion"'/g' \
+		-e 's/%%TIMESCALEDB_VERSION%%/'"$timescaledbVersion"'/g' \
+		-e 's/%%TIMESCALEDB_TOOLKIT_VERSION%%/'"$timescaledbToolkitVersion"'/g' \
 		"${dockerTemplate}" \
 		>"$version/Dockerfile"
 }

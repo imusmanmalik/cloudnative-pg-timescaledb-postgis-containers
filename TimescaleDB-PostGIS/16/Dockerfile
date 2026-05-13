@@ -19,7 +19,7 @@ FROM postgis/postgis:16-3.5
 # Do not split the description, otherwise we will see a blank space in the labels
 LABEL name="PostgreSQL + TimescaleDB + PostGIS Container Images" \
 	version="${PG_VERSION}" \
-	release="115" \
+	release="116" \
 	summary="PostgreSQL + TimescaleDB + PostGIS Container images." \
 	description="This Docker image contains PostgreSQL, TimescaleDB, PostGIS and Barman Cloud based on Postgres 16-3.5."
 
@@ -33,7 +33,10 @@ RUN apt-get update \
 	&& echo "deb https://packagecloud.io/timescale/timescaledb/debian/ $(lsb_release -c -s) main" | tee /etc/apt/sources.list.d/timescaledb.list \
 	&& wget --quiet -O - https://packagecloud.io/timescale/timescaledb/gpgkey | apt-key add - \
 	&& apt-get update \
-	&& apt-get install -y "timescaledb-2-postgresql-${PG_MAJOR}" "timescaledb-toolkit-postgresql-${PG_MAJOR}" \
+	&& apt-get install -y \
+	"timescaledb-2-loader-postgresql-${PG_MAJOR}=2.22.0~debian11" \
+	"timescaledb-2-postgresql-${PG_MAJOR}=2.22.0~debian11" \
+	"timescaledb-toolkit-postgresql-${PG_MAJOR}=1:1.22.0~debian11" \
 	&& apt-get remove -y lsb-release wget \
 	&& 	rm -fr /tmp/* \
 	&& 	rm -rf /var/lib/apt/lists/*

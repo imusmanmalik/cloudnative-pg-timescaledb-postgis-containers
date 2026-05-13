@@ -29,9 +29,8 @@ Prefer full image tags such as `17-3.5-115` over rolling tags such as `17`
 or `17-3.5` for production clusters. Rolling tags can move when PostgreSQL,
 PostGIS, TimescaleDB, or Barman packages change.
 
-The current legacy build installs TimescaleDB from the TimescaleDB apt
-repository without pinning the apt package version in the image tag. See
-[MAINTENANCE.md](MAINTENANCE.md) for the planned versioning strategy.
+The current build pins TimescaleDB and TimescaleDB Toolkit apt package
+versions in each generated Dockerfile and `.versions.json` file.
 
 ## How to use them
 
@@ -51,7 +50,7 @@ metadata:
   name: cluster-example
 spec:
   instances: 1
-  imageName: ghcr.io/imusmanmalik/timescaledb-postgis:17-3.5-115
+  imageName: ghcr.io/imusmanmalik/timescaledb-postgis:17-3.5-116
   bootstrap:
     initdb:
       postInitTemplateSQL:
