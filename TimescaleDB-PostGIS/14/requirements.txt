@@ -13,9 +13,9 @@ azure-core==1.39.0 \
 azure-identity==1.25.3 \
     --hash=sha256:ab23c0d63015f50b630ef6c6cf395e7262f439ce06e5d07a64e874c724f8d9e6 \
     --hash=sha256:f4d0b956a8146f30333e071374171f3cfa7bdb8073adb8c3814b65567aa7447c
-azure-storage-blob==12.28.0 \
-    --hash=sha256:00fb1db28bf6a7b7ecaa48e3b1d5c83bfadacc5a678b77826081304bd87d6461 \
-    --hash=sha256:e7d98ea108258d29aa0efbfd591b2e2075fa1722a2fae8699f0b3c9de11eff41
+azure-storage-blob==12.29.0 \
+    --hash=sha256:2824ddd7ebc9056034ebc76b17971a38e9aa5835abb0d565b9700493f2a6c657 \
+    --hash=sha256:ccf8a1bcd5e49df83ab85aab793b579e5ba2eeea2ad8900b2f62ca3a37dc391f
 barman[azure,cloud,google,lz4,snappy,zstandard]==3.13.3 \
     --hash=sha256:0ebc81caf4f9d8a9ca986d364a5cd6398ec90b5ef0292985e6551b8aba501114 \
     --hash=sha256:d3fe573ea81d820ab0b30ec921c3ed2a226b8a1acdd9990a4bfdb84d3ff38906
