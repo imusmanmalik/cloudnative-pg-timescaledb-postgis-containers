@@ -15,4 +15,4 @@ spec:
     - major: 16
       image: ghcr.io/imusmanmalik/timescaledb-postgis:16-3.5-119@sha256:1982577ce96af8fdf06d3b6004ae14034aefead9a3bbd5ac13dcd52afb981c42
     - major: 17
-      image: ghcr.io/imusmanmalik/timescaledb-postgis:17-3.5-119@sha256:9c8a80a70dc11bed8113b4d2d433a0d8c7c9fc754edfa07718911bee24ad75ac
+      image: ghcr.io/imusmanmalik/timescaledb-postgis:17-3.5-120@sha256:247adf102f33f71a346bf6deecc4d0f94c16245b00580e14e247446ceae9a144
