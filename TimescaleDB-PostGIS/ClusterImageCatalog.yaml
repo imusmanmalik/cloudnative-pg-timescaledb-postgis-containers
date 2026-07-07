@@ -9,10 +9,10 @@ spec:
     - major: 13
       image: ghcr.io/imusmanmalik/timescaledb-postgis:13-3.5-109@sha256:ace30fb308d27868498a5f005831b2a3f90eaf900d9f2301035f01c278753011
     - major: 14
-      image: ghcr.io/imusmanmalik/timescaledb-postgis:14-3.5-123@sha256:a885066a6113c4552179a8f497d09decc40383de1aea0c30b1333e4109e9551b
+      image: ghcr.io/imusmanmalik/timescaledb-postgis:14-3.5-124@sha256:9bea90aa1a5b2472d647d9b009af85ce2198d4047de800ef3ff0f38ec00de0f3
     - major: 15
-      image: ghcr.io/imusmanmalik/timescaledb-postgis:15-3.5-124@sha256:8904cb7f2cc8e6687fdacbb7f302016e773e98f4a55322c5cbf06b4e660721b8
+      image: ghcr.io/imusmanmalik/timescaledb-postgis:15-3.5-125@sha256:91bee81a56b3237d0c655ea8ed57a88729f01f0008e470cc86a568b478dd8f05
     - major: 16
-      image: ghcr.io/imusmanmalik/timescaledb-postgis:16-3.5-124@sha256:ad64b7d69e0c791279438ce0594b676819f7242764699b0f24ce14d9505112a8
+      image: ghcr.io/imusmanmalik/timescaledb-postgis:16-3.5-125@sha256:e80849adfa293b0aa6f64d1513b42cea57697101ef4bf0dfd08ba317bf1a7ebc
     - major: 17
-      image: ghcr.io/imusmanmalik/timescaledb-postgis:17-3.5-125@sha256:c48c3ebf27b9028adf7520b0b2e29a7e9afa7749cf891b1071e4e7f5641c3a7b
+      image: ghcr.io/imusmanmalik/timescaledb-postgis:17-3.5-126@sha256:0d4f0796a2c9ab7beb29e086ab120706e09e5954064853158208180bb2314fec
