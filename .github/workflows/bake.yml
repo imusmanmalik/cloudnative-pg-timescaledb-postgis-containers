@@ -35,7 +35,9 @@ jobs:
           # Only the majors we ship a TimescaleDB pin for (the timescaledbMatrix keys),
           # so a PG major CNPG builds but TimescaleDB lacks (e.g. a new preview) does not
           # spawn an empty, build-everything matrix leg.
-          VERSIONS="$(sed -n 's/^[[:space:]]*"\([0-9][0-9]*\)"[[:space:]]*=[[:space:]]*{.*tsdb.*/\1/p' docker-bake.hcl \
+          # Match the timescaledbMatrix major keys ("14" = {, "15" = {, ...). Only those
+          # lines have a quoted numeric key followed by "= {"; postgisMatrix uses "= \"".
+          VERSIONS="$(sed -n 's/^[[:space:]]*"\([0-9][0-9]*\)"[[:space:]]*=[[:space:]]*{.*/\1/p' docker-bake.hcl \
             | sort -nu | paste -sd,)"
           echo "PostgreSQL versions: [$VERSIONS]"
           echo "versions=[$VERSIONS]" >> "$GITHUB_OUTPUT"
