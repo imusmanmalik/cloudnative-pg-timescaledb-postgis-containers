@@ -1,0 +1,70 @@
+name: Update Catalogs
+
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [update-catalogs]
+
+permissions: read-all
+
+defaults:
+  run:
+    shell: "bash -Eeuo pipefail -x {0}"
+
+jobs:
+  update-catalogs:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          token: ${{ secrets.REPO_GHA_PAT }}
+
+      - name: Gather supported distributions and imageTypes
+        id: get_env
+        run: |
+          DISTROS=$(sed -n '/variable "distributions"/,/}/ { s/^[[:space:]]*"\([^"]*\)".*/\1/p }' docker-bake.hcl | paste -sd, -)
+          IMAGE_TYPES=$(sed -n '/variable "imageTypes"/,/}/ { s/^[[:space:]]*"\([^"]*\)".*/\1/p }' docker-bake.hcl | paste -sd, -)
+          echo "distributions=$DISTROS" >> "$GITHUB_OUTPUT"
+          echo "image_types=$IMAGE_TYPES" >> "$GITHUB_OUTPUT"
+
+      - name: Generate catalogs
+        uses: cloudnative-pg/postgres-containers/.github/actions/generate-catalogs@main
+        with:
+          output-dir: image-catalogs/
+          registry: ghcr.io/imusmanmalik/timescaledb-postgis
+          family: timescaledb-postgis
+          distributions: ${{ steps.get_env.outputs.distributions }}
+          image-types: ${{ steps.get_env.outputs.image_types }}
+          regex: '(\d+)(?:\.\d+|beta\d+|rc\d+|alpha\d+)-(\d+(?:\.\d+){1,3})-(\d{12})'
+
+      - name: Diff
+        run: |
+          git add -A .
+          git status
+          git diff --staged
+
+      - name: Temporarily disable "include administrators" branch protection
+        if: ${{ always() && github.ref == 'refs/heads/main' }}
+        id: disable_include_admins
+        uses: benjefferies/branch-protection-bot@af281f37de86139d1c7a27b91176b5dc1c2c827c # v1.1.2
+        with:
+          access_token: ${{ secrets.REPO_GHA_PAT }}
+          branch: main
+          enforce_admins: false
+
+      - uses: EndBug/add-and-commit@290ea2c423ad77ca9c62ae0f5b224379612c0321 # v10
+        if: ${{ github.ref == 'refs/heads/main' }}
+        with:
+          add: 'image-catalogs/*.yaml'
+          author_name: imusmanmalik
+          author_email: usmanmalik@engineer.com
+          message: 'chore: update imageCatalogs'
+
+      - name: Enable "include administrators" branch protection
+        uses: benjefferies/branch-protection-bot@af281f37de86139d1c7a27b91176b5dc1c2c827c # v1.1.2
+        if: ${{ always() && github.ref == 'refs/heads/main' }}
+        with:
+          access_token: ${{ secrets.REPO_GHA_PAT }}
+          branch: main
+          enforce_admins: ${{ steps.disable_include_admins.outputs.initial_status }}

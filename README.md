@@ -1,47 +1,81 @@
-# cloudnative-pg-timescaledb-postgis-containers
+# TimescaleDB + PostGIS containers for CloudNativePG
 
-Operand images for CloudNativePG containing PostgreSQL with TimescaleDB and PostGIS
+[![Bake Images](https://github.com/imusmanmalik/cloudnative-pg-timescaledb-postgis-containers/actions/workflows/bake.yml/badge.svg)](https://github.com/imusmanmalik/cloudnative-pg-timescaledb-postgis-containers/actions/workflows/bake.yml)
+[![Validate](https://github.com/imusmanmalik/cloudnative-pg-timescaledb-postgis-containers/actions/workflows/validate.yml/badge.svg)](https://github.com/imusmanmalik/cloudnative-pg-timescaledb-postgis-containers/actions/workflows/validate.yml)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![GHCR](https://img.shields.io/badge/ghcr.io-timescaledb--postgis-2496ED?logo=docker&logoColor=white)](https://github.com/imusmanmalik/cloudnative-pg-timescaledb-postgis-containers/pkgs/container/timescaledb-postgis)
 
-Immutable Application Containers for all available PostgreSQL versions (12 to 17) + TimescaleDB + PostGIS to be used as operands 
-with the [CloudNativePG operator](https://cloudnative-pg.io) for Kubernetes.
+Operand images for [CloudNativePG](https://cloudnative-pg.io) that add **TimescaleDB**,
+**TimescaleDB Toolkit**, **PostGIS**, and **pgRouting** on top of the official CloudNativePG
+PostgreSQL images - so you get time-series and geospatial Postgres as a first-class CNPG operand.
 
-These images are built on top of the [PostGIS image](https://hub.docker.com/r/postgis/postgis)
-(Debian version), by adding the following software:
+The images are built with the same [Docker Bake](https://docs.docker.com/build/bake/) machinery
+CloudNativePG uses for its own operands. Each image is the upstream
+`ghcr.io/cloudnative-pg/postgresql` base with a single extension layer added, and inherits its
+SBOM, provenance, and cosign signatures for free.
 
-- TimescaleDB
-- Barman Cloud
-- PGAudit
+## Highlights
 
-> **Note:** Platform support (amd64/arm64) is automatically detected for each PostgreSQL version by querying Docker Hub's API. If a specific version doesn't support arm64 architecture, the build process will automatically fall back to amd64-only builds. This ensures that images are built for all supported architectures without manual configuration.
+- **Real CNPG operand** - based on the official operand image, runs as `USER 26` with the
+  unchanged entrypoint. Drop it straight into a `Cluster`.
+- **Pinned, reproducible extensions** - one TimescaleDB, Toolkit, and PostGIS version pinned per
+  PostgreSQL major and distribution. No surprise upgrades between rebuilds.
+- **PostgreSQL 14 to 18**, on Debian **bookworm** and **trixie**, in **standard** and **system**
+  flavours.
+- **Tested every build** - each PR builds representative images and asserts the extensions load
+  and their versions match the pins (container smoke) with an optional CNPG kind end-to-end test.
+- **Kept current automatically** - Renovate tracks the apt pins; a weekly bake rebuilds against
+  the latest CNPG base so PostgreSQL minor and security updates flow through.
 
-Barman Cloud is distributed by EnterpriseDB under the
-[GNU GPL 3 License](https://github.com/EnterpriseDB/barman/blob/master/LICENSE).
+## What is inside
 
-PGAudit is distributed under the
-[PostgreSQL License](https://github.com/pgaudit/pgaudit/blob/master/LICENSE).
+Added by this image:
 
-Images are available via the
-[GitHub Container Registry](https://github.com/imusmanmalik/cloudnative-pg-timescaledb-postgis-containers/pkgs/container/timescaledb-postgis).
+| Extension | Source |
+|-----------|--------|
+| `timescaledb` + loader | packagecloud (`timescale/timescaledb`) |
+| `timescaledb_toolkit` | packagecloud |
+| `postgis`, `postgis_topology` | PGDG |
+| `pgrouting` | PGDG |
 
-## Versioning note
+Already provided by the CloudNativePG base: `pgaudit`, `pgvector`, `pg_failover_slots`. The
+**system** flavour additionally ships Barman Cloud for in-cluster backups.
 
-Prefer full image tags such as `17-3.5-115` over rolling tags such as `17`
-or `17-3.5` for production clusters. Rolling tags can move when PostgreSQL,
-PostGIS, TimescaleDB, or Barman packages change.
+## Image matrix
 
-The current build pins TimescaleDB and TimescaleDB Toolkit apt package
-versions in each generated Dockerfile and `.versions.json` file.
+Image name: `ghcr.io/imusmanmalik/timescaledb-postgis`
 
-## How to use them
+| PostgreSQL | bookworm | trixie |
+|:----------:|:--------:|:------:|
+| 14 | built | not available |
+| 15 | built | built |
+| 16 | built | built |
+| 17 | built | built |
+| 18 | built | built |
 
-The following example shows how you can create a PostgreSQL cluster with
-TimescaleDB and PostGIS. Set `imageName` to the exact image tag you want to
-run. Please look at the registry for a list of available images and select the
-one you need.
+Each cell is built for both `standard` and `system`, on `linux/amd64` and `linux/arm64`.
+TimescaleDB publishes no PostgreSQL 14 packages for trixie, so that one cell is intentionally
+excluded.
 
-Create a YAML manifest. For example, you can put the YAML below into a file
-named `timescaledb-postgis.yaml` (any name is fine). (Please refer to
-[CloudNativePG](https://cloudnative-pg.io/docs) for details on the API):
+### Tags
+
+```
+<pgMajor>-<postgis>-<type>-<distro>              # rolling, e.g. 17-3.6.4-standard-trixie
+<pgFull>-<postgis>-<type>-<distro>               # e.g. 17.10-3.6.4-standard-trixie
+<pgFull>-<postgis>-<YYYYMMDDhhmm>-<type>-<distro> # immutable, e.g. 17.10-3.6.4-202607190900-standard-trixie
+```
+
+The pinned TimescaleDB and Toolkit versions are recorded in image **labels**
+(`io.timescaledb.version`, `io.timescaledb.toolkit.version`), not in the tag.
+
+> **Use the immutable dated tag (or a digest) for production.** Rolling tags move when packages
+> change. Pinning the digest is what makes an image reproducible - this is the class of problem
+> behind ABI-mismatch reports where an installed library disagrees with the default extension
+> version; the pinned pins plus the version-assertion smoke tests guard against it.
+
+## Quickstart
+
+Create a single-instance cluster from an image:
 
 ```yaml
 apiVersion: postgresql.cnpg.io/v1
@@ -50,86 +84,102 @@ metadata:
   name: cluster-example
 spec:
   instances: 1
-  imageName: ghcr.io/imusmanmalik/timescaledb-postgis:17-3.5-116
+  imageName: ghcr.io/imusmanmalik/timescaledb-postgis:17.10-3.6.4-standard-trixie
+  postgresql:
+    shared_preload_libraries:
+      - timescaledb
   bootstrap:
     initdb:
       postInitTemplateSQL:
         - CREATE EXTENSION timescaledb;
+        - CREATE EXTENSION timescaledb_toolkit;
         - CREATE EXTENSION postgis;
         - CREATE EXTENSION postgis_topology;
-        - CREATE EXTENSION fuzzystrmatch;
-        - CREATE EXTENSION postgis_tiger_geocoder;
-  postgresql:
-    shared_preload_libraries:
-      - timescaledb
+        - CREATE EXTENSION pgrouting;
   storage:
     size: 1Gi
 ```
 
-Then run `kubectl apply -f timescaledb-postgis.yaml`.
-
-When the cluster is up, run the following command to verify the version of
-PostGIS that is available in the system, by connecting to the `app` database:
-
-```console
-kubectl exec -ti cluster-example-1 -- psql app
-Defaulted container "postgres" out of: postgres, bootstrap-controller (init)
-psql (14.7 (Debian 14.7-1.pgdg110+1))
-Type "help" for help.
-
-app=# SELECT * FROM pg_available_extensions WHERE name ~ '^postgis' ORDER BY 1;
-           name           | default_version | installed_version |                          comment
-
---------------------------+-----------------+-------------------+----------------------------------------------------
---------
- postgis                  | 3.3.2           | 3.3.2             | PostGIS geometry and geography spatial types and fu
-nctions
- postgis-3                | 3.3.2           |                   | PostGIS geometry and geography spatial types and fu
-nctions
- postgis_raster           | 3.3.2           |                   | PostGIS raster types and functions
- postgis_raster-3         | 3.3.2           |                   | PostGIS raster types and functions
- postgis_sfcgal           | 3.3.2           |                   | PostGIS SFCGAL functions
- postgis_sfcgal-3         | 3.3.2           |                   | PostGIS SFCGAL functions
- postgis_tiger_geocoder   | 3.3.2           | 3.3.2             | PostGIS tiger geocoder and reverse geocoder
- postgis_tiger_geocoder-3 | 3.3.2           |                   | PostGIS tiger geocoder and reverse geocoder
- postgis_topology         | 3.3.2           | 3.3.2             | PostGIS topology spatial types and functions
- postgis_topology-3       | 3.3.2           |                   | PostGIS topology spatial types and functions
-(10 rows)
-
-app=# SELECT * FROM pg_available_extensions WHERE name ~ '^timescaledb' ORDER BY 1;
-        name         | default_version | installed_version |                                        comment
-
----------------------+-----------------+-------------------+---------------------------------------------------------
-------------------------------
- timescaledb         | 2.10.0          | 2.10.0            | Enables scalable inserts and complex queries for time-se
-ries data
- timescaledb_toolkit | 1.14.0          |                   | Library of analytical hyperfunctions, time-series pipeli
-ning, and other SQL utilities
-(2 rows)
+```bash
+kubectl apply -f cluster-example.yaml
 ```
 
-The following command shows the extensions installed in the `app` database,
-thanks to the `postInitTemplateSQL` section in the bootstrap which runs the
-selected `CREATE EXTENSION` commands in the `template1` database, which is
-inherited by the application database - called `app` and created by default by
-CloudNativePG.
+### Using an image catalog
 
-```console
-app=# \dx
-                                           List of installed extensions
-          Name          | Version |   Schema   |                            Description
-------------------------+---------+------------+-------------------------------------------------------------------
- fuzzystrmatch          | 1.1     | public     | determine similarities and distance between strings
- plpgsql                | 1.0     | pg_catalog | PL/pgSQL procedural language
- postgis                | 3.3.2   | public     | PostGIS geometry and geography spatial types and functions
- postgis_tiger_geocoder | 3.3.2   | tiger      | PostGIS tiger geocoder and reverse geocoder
- postgis_topology       | 3.3.2   | topology   | PostGIS topology spatial types and functions
- timescaledb            | 2.10.0  | public     | Enables scalable inserts and complex queries for time-series data
-(6 rows)
+Instead of a hard-coded `imageName`, reference a `ClusterImageCatalog` and pick the image by
+PostgreSQL major. Catalogs live in [`image-catalogs/`](image-catalogs/):
+
+```yaml
+spec:
+  imageCatalogRef:
+    apiGroup: postgresql.cnpg.io
+    kind: ClusterImageCatalog
+    name: timescaledb-postgis-standard-trixie
+    major: 17
 ```
 
-You can now enjoy TimescaleDB and PostGIS!
+### Verify
 
-## License and copyright
+```console
+$ kubectl exec -ti cluster-example-1 -- psql app -c '\dx'
+        Name         | Version |   Schema   |            Description
+---------------------+---------+------------+-----------------------------------
+ pgrouting           | 4.0.1   | public     | pgRouting Extension
+ plpgsql             | 1.0     | pg_catalog | PL/pgSQL procedural language
+ postgis             | 3.6.4   | public     | PostGIS geometry and geography ...
+ postgis_topology    | 3.6.4   | topology   | PostGIS topology spatial types ...
+ timescaledb         | 2.28.3  | public     | Enables scalable inserts and ...
+ timescaledb_toolkit | 1.23.0  | public     | Library of analytical hyperfunc...
+```
 
-This software is available under [Apache License 2.0](LICENSE).
+## Building locally
+
+The local bake file layers on top of the CloudNativePG source bake file, exactly as CI does:
+
+```bash
+# Fetch the CNPG source bake file (mounted at ./source in CI)
+curl -sSL https://raw.githubusercontent.com/cloudnative-pg/postgres-containers/main/docker-bake.hcl \
+  -o source/docker-bake.hcl
+
+# See every resolved target
+docker buildx bake -f source/docker-bake.hcl -f docker-bake.hcl --print postgis
+
+# Build a single cell for your host arch and load it
+docker buildx bake -f source/docker-bake.hcl -f docker-bake.hcl \
+  postgis-3-17-standard-trixie \
+  --set '*.platform=linux/arm64' --set '*.output=type=docker' \
+  --provenance=false --sbom=false --load
+```
+
+### Testing
+
+Run the container smoke test against a built image. It boots the image, creates every extension,
+runs functional TimescaleDB / PostGIS / pgRouting / Toolkit queries, and optionally asserts exact
+versions:
+
+```bash
+EXPECTED_TIMESCALEDB=2.28.3 EXPECTED_TOOLKIT=1.23.0 EXPECTED_POSTGIS=3.6.4 \
+  test/smoke.sh ghcr.io/imusmanmalik/timescaledb-postgis:17.10-3.6.4-standard-trixie
+```
+
+The same smoke test is the required PR gate (`validate.yml`); `e2e.yml` runs it against a live
+CloudNativePG cluster on kind.
+
+## How it stays up to date
+
+- **Renovate** (`renovate.json`) bumps the TimescaleDB and Toolkit pins (packagecloud) and the
+  PostGIS pin (PGDG) directly in `docker-bake.hcl`, plus the GitHub Actions.
+- Every pin-bump PR must pass the `validate.yml` smoke tests before it can merge.
+- The weekly **bake** run rebuilds against the current CloudNativePG base images and refreshes the
+  image catalogs.
+
+## Credits
+
+Built on [CloudNativePG](https://cloudnative-pg.io) and its
+[postgres-containers](https://github.com/cloudnative-pg/postgres-containers) /
+[postgis-containers](https://github.com/cloudnative-pg/postgis-containers) build machinery.
+TimescaleDB is a product of Timescale, Inc. PostGIS is a project of the OSGeo Foundation.
+
+## License
+
+Available under the [Apache License 2.0](LICENSE).

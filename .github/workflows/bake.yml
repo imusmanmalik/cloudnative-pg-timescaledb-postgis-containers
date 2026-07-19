@@ -1,0 +1,83 @@
+name: Bake Images
+
+on:
+  schedule:
+    # Rebuild weekly against the current CNPG base images, on Mondays
+    - cron: 0 10 * * 1
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        options:
+          - testing
+          - production
+        default: testing
+        description: "Choose the environment to bake the target for"
+
+permissions: {}
+
+jobs:
+  get_versions:
+    name: Get PostgreSQL versions
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    outputs:
+      versions: ${{ steps.get_versions.outputs.versions }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+
+      - name: Get supported PostgreSQL versions
+        id: get_versions
+        run: |
+          # Only the majors we ship a TimescaleDB pin for (the timescaledbMatrix keys),
+          # so a PG major CNPG builds but TimescaleDB lacks (e.g. a new preview) does not
+          # spawn an empty, build-everything matrix leg.
+          # Match the timescaledbMatrix major keys ("14" = {, "15" = {, ...). Only those
+          # lines have a quoted numeric key followed by "= {"; postgisMatrix uses "= \"".
+          VERSIONS="$(sed -n 's/^[[:space:]]*"\([0-9][0-9]*\)"[[:space:]]*=[[:space:]]*{.*/\1/p' docker-bake.hcl \
+            | sort -nu | paste -sd,)"
+          echo "PostgreSQL versions: [$VERSIONS]"
+          echo "versions=[$VERSIONS]" >> "$GITHUB_OUTPUT"
+
+  Bake:
+    name: Bake
+    needs: get_versions
+    permissions:
+      packages: write
+      contents: read
+      id-token: write
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ${{ fromJson(needs.get_versions.outputs.versions) }}
+    uses: cloudnative-pg/postgres-containers/.github/workflows/bake_targets.yml@main
+    with:
+      # inputs.environment is null on pull_request/schedule; the reusable workflow
+      # requires it. Default to testing - production promotion is gated separately on
+      # event_name == schedule / explicit production dispatch.
+      environment: ${{ github.event.inputs.environment || 'testing' }}
+      postgresql_version: ${{ matrix.version }}
+      target: "postgis"
+      bake_files: "./source/docker-bake.hcl,./docker-bake.hcl"
+      bake_remote_source: "cloudnative-pg/postgres-containers"
+    secrets:
+      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+  Catalogs:
+    name: Update Catalogs
+    needs: Bake
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    if: |
+      github.ref == 'refs/heads/main' &&
+      ( github.event.inputs.environment == 'production' || github.event_name == 'schedule' )
+    steps:
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@ff45666b9427631e3450c54a1bcbee4d9ff4d7c0 # v3
+        with:
+          event-type: update-catalogs

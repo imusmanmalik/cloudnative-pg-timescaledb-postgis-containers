@@ -2,6 +2,7 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended",
+    "docker:pinDigests",
     ":dependencyDashboard",
     ":semanticCommits"
   ],
@@ -16,25 +17,40 @@
   "customManagers": [
     {
       "customType": "regex",
+      "description": "PostGIS apt pin (PGDG) in docker-bake.hcl",
       "managerFilePatterns": [
-        "/^TimescaleDB-PostGIS/timescaledb-pins\\.json$/"
+        "/docker-bake.hcl/"
       ],
       "matchStrings": [
-        "\"package\"\\s*:\\s*\"(?<depName>timescaledb-2-postgresql-[0-9]+)\",\\n\\s*\"version\"\\s*:\\s*\"(?<currentValue>[^\"]+)\"",
-        "\"package\"\\s*:\\s*\"(?<depName>timescaledb-toolkit-postgresql-[0-9]+)\",\\n\\s*\"version\"\\s*:\\s*\"(?<currentValue>[^\"]+)\""
+        "\\/\\/\\s*renovate:\\s*suite=(?<suite>[a-z]+-pgdg)\\s+depName=(?<depName>postgis)\\s*\\n\\s*\"[A-Za-z0-9_-]+\"\\s*=\\s*\"(?<currentValue>[^\"]+)\""
       ],
       "datasourceTemplate": "deb",
       "versioningTemplate": "deb",
-      "registryUrlTemplate": "https://packagecloud.io/timescale/timescaledb/debian?suite=bullseye&components=main&binaryArch=amd64"
+      "registryUrlTemplate": "https://download.postgresql.org/pub/repos/apt?suite={{{suite}}}&components=main&binaryArch=amd64"
+    },
+    {
+      "customType": "regex",
+      "description": "TimescaleDB + toolkit apt pins (packagecloud) in docker-bake.hcl",
+      "managerFilePatterns": [
+        "/docker-bake.hcl/"
+      ],
+      "matchStrings": [
+        "\\/\\/\\s*renovate:\\s*datasource=deb\\s+suite=(?<suite>[a-z]+)\\s+depName=(?<depName>timescaledb-[a-z0-9-]+)\\s*\\n\\s*(?:tsdb|toolkit)\\s*=\\s*\"(?<currentValue>[^\"]+)\""
+      ],
+      "datasourceTemplate": "deb",
+      "versioningTemplate": "deb",
+      "registryUrlTemplate": "https://packagecloud.io/timescale/timescaledb/debian?suite={{{suite}}}&components=main&binaryArch=amd64"
     }
   ],
   "packageRules": [
     {
-      "matchManagers": [
-        "custom.regex"
+      "matchDatasources": [
+        "deb"
       ],
-      "groupName": "TimescaleDB package pins",
-      "commitMessageTopic": "TimescaleDB package pins"
+      "matchPackageNames": [
+        "/^timescaledb-/"
+      ],
+      "groupName": "TimescaleDB packages"
     },
     {
       "matchManagers": [
@@ -42,14 +58,5 @@
       ],
       "groupName": "GitHub Actions"
     }
-  ],
-  "postUpgradeTasks": {
-    "commands": [
-      "./TimescaleDB-PostGIS/sync-timescaledb-pins.sh"
-    ],
-    "fileFilters": [
-      "TimescaleDB-PostGIS/**"
-    ],
-    "executionMode": "branch"
-  }
+  ]
 }
