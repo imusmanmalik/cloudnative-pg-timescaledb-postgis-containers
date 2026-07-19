@@ -54,7 +54,10 @@ jobs:
         version: ${{ fromJson(needs.get_versions.outputs.versions) }}
     uses: cloudnative-pg/postgres-containers/.github/workflows/bake_targets.yml@main
     with:
-      environment: ${{ github.event.inputs.environment }}
+      # inputs.environment is null on pull_request/schedule; the reusable workflow
+      # requires it. Default to testing - production promotion is gated separately on
+      # event_name == schedule / explicit production dispatch.
+      environment: ${{ github.event.inputs.environment || 'testing' }}
       postgresql_version: ${{ matrix.version }}
       target: "postgis"
       bake_files: "./source/docker-bake.hcl,./docker-bake.hcl"

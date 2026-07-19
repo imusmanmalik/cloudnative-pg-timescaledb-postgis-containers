@@ -65,10 +65,13 @@ jobs:
 
       - name: Build ${{ matrix.target }} (amd64, load)
         run: |
+          # Disable provenance/sbom so the build is a single manifest the docker
+          # exporter (--load) can handle; the oci-artifact output + attestations from
+          # the target would otherwise produce a manifest list.
           docker buildx bake -f source/docker-bake.hcl -f docker-bake.hcl "${{ matrix.target }}" \
             --set '*.platform=linux/amd64' \
             --set '*.output=type=docker' \
-            --set '*.attest=' \
+            --provenance=false --sbom=false \
             --load
 
       - name: Smoke test with strict version assertions

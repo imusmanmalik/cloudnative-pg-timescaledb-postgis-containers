@@ -50,7 +50,7 @@ jobs:
           docker buildx bake -f source/docker-bake.hcl -f docker-bake.hcl "$TARGET" \
             --set '*.platform=linux/amd64' \
             --set '*.output=type=docker' \
-            --set '*.attest=' \
+            --provenance=false --sbom=false \
             --set "${TARGET}.tags=${IMAGE}" \
             --load
 

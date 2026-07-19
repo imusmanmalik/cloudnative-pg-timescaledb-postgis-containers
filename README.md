@@ -147,7 +147,8 @@ docker buildx bake -f source/docker-bake.hcl -f docker-bake.hcl --print postgis
 # Build a single cell for your host arch and load it
 docker buildx bake -f source/docker-bake.hcl -f docker-bake.hcl \
   postgis-3-17-standard-trixie \
-  --set '*.platform=linux/arm64' --set '*.output=type=docker' --set '*.attest=' --load
+  --set '*.platform=linux/arm64' --set '*.output=type=docker' \
+  --provenance=false --sbom=false --load
 ```
 
 ### Testing
