@@ -32,7 +32,8 @@ jobs:
             # pip-tools provides pip-compile used by update.sh
             # pip3 install --upgrade pip-tools pip
             # TODO: Pinning pip due to https://github.com/jazzband/pip-tools/issues/2176, remove when fixed
-            pip3 install --upgrade pip-tools pip\<25.1
+            # typing_extensions: pip-tools 7.6.0 imports it on Python <3.11 but does not declare it as a dependency
+            pip3 install --upgrade pip-tools pip\<25.1 typing_extensions
             export PATH=$HOME/.local/bin:$PATH
             echo "Updating TimescaleDB-PostGIS images"
             ./TimescaleDB-PostGIS/update.sh
