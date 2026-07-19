@@ -1,51 +1,80 @@
 name: Validate
 
+# Tier-1 gate: on every PR touching the build, build a representative cell per distro
+# locally (no push) and run the container smoke + extension/version tests. This is the
+# required check that TimescaleDB / PostGIS pin bumps (Renovate) must pass before merge.
+
 on:
   pull_request:
     paths:
-      - ".github/generate-strategy.sh"
-      - ".github/scripts/**"
-      - ".github/workflows/validate.yml"
-      - "TimescaleDB-PostGIS/**"
-      - "renovate.json"
+      - Dockerfile
+      - docker-bake.hcl
+      - test/**
+      - .github/workflows/validate.yml
   workflow_dispatch:
 
-permissions:
-  contents: read
+permissions: {}
+
+defaults:
+  run:
+    shell: "bash -Eeuo pipefail -x {0}"
 
 jobs:
-  validate:
-    name: Validate
-    runs-on: ubuntu-22.04
+  smoke:
+    name: Smoke ${{ matrix.target }}
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        # One representative cell per distro, plus the frozen/arch-skew pg14 bookworm cell.
+        target:
+          - postgis-3-17-standard-trixie
+          - postgis-3-17-standard-bookworm
+          - postgis-3-14-standard-bookworm
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - name: Checkout Code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
 
-      - name: Shell syntax
+      - name: Fetch the CNPG source bake file
         run: |
-          bash -n .github/generate-strategy.sh
-          bash -n .github/scripts/changed-majors.sh
-          bash -n .github/scripts/smoke-image.sh
-          bash -n .github/scripts/validate-images.sh
-          bash -n .github/scripts/verify-package-pins.sh
-          bash -n TimescaleDB-PostGIS/sync-timescaledb-pins.sh
-          bash -n TimescaleDB-PostGIS/update.sh
+          mkdir -p source
+          curl -sSL https://raw.githubusercontent.com/cloudnative-pg/postgres-containers/main/docker-bake.hcl \
+            -o source/docker-bake.hcl
 
-      - name: Verify version metadata
-        run: |
-          jq -e . renovate.json
-          jq -e . TimescaleDB-PostGIS/timescaledb-pins.json
-          jq -e . TimescaleDB-PostGIS/[0-9]*/.versions.json >/dev/null
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4
 
-      - name: Verify package pins
-        run: .github/scripts/verify-package-pins.sh
-
-      - name: Generate build strategy
-        run: bash .github/generate-strategy.sh
-
-      - name: Validate changed images
+      - name: Resolve pins and image tag for ${{ matrix.target }}
+        id: pins
         env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
-        run: .github/scripts/validate-images.sh "$BASE_SHA"
+          TARGET: ${{ matrix.target }}
+        run: |
+          spec="$(docker buildx bake -f source/docker-bake.hcl -f docker-bake.hcl --print "$TARGET" 2>/dev/null)"
+          get() { echo "$spec" | python3 -c "import sys,json;print(json.load(sys.stdin)['target']['$TARGET']$1)"; }
+          tsdb="$(get "['args']['TIMESCALEDB_VERSION']")"
+          toolkit="$(get "['args']['TIMESCALEDB_TOOLKIT_VERSION']")"
+          postgis="$(get "['args']['POSTGIS_VERSION']")"
+          tag="$(get "['tags'][0]")"
+          # apt pin -> extension version: strip epoch (1:), debian suffix (~...), keep x.y.z
+          echo "expected_timescaledb=$(echo "$tsdb" | sed 's/~.*//')" >> "$GITHUB_OUTPUT"
+          echo "expected_toolkit=$(echo "$toolkit" | sed 's/^[0-9]*://; s/~.*//')" >> "$GITHUB_OUTPUT"
+          echo "expected_postgis=$(echo "$postgis" | grep -oE '^[0-9]+\.[0-9]+\.[0-9]+')" >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: Build ${{ matrix.target }} (amd64, load)
+        run: |
+          docker buildx bake -f source/docker-bake.hcl -f docker-bake.hcl "${{ matrix.target }}" \
+            --set '*.platform=linux/amd64' \
+            --set '*.output=type=docker' \
+            --set '*.attest=' \
+            --load
+
+      - name: Smoke test with strict version assertions
+        env:
+          EXPECTED_TIMESCALEDB: ${{ steps.pins.outputs.expected_timescaledb }}
+          EXPECTED_TOOLKIT: ${{ steps.pins.outputs.expected_toolkit }}
+          EXPECTED_POSTGIS: ${{ steps.pins.outputs.expected_postgis }}
+        run: |
+          bash test/smoke.sh "${{ steps.pins.outputs.tag }}"

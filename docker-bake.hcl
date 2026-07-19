@@ -14,11 +14,17 @@ variable "postgisMajorVersions" {
 }
 
 variable "distributions" {
-  default = ["bookworm", "trixie"]
+  default = [
+    "bookworm",
+    "trixie",
+  ]
 }
 
 variable "imageTypes" {
-  default = ["standard", "system"]
+  default = [
+    "standard",
+    "system",
+  ]
 }
 
 // PostGIS apt pins, mirroring cloudnative-pg/postgis-containers' postgisMatrix.
@@ -38,34 +44,80 @@ postgisMatrix = {
 // preview major (e.g. 19) has none at all. pg14 bookworm is frozen at 2.19.3 upstream, and
 // its toolkit is pinned to 1.19.0 - the newest version present on BOTH amd64 and arm64
 // (arm64's 1.20.0 has no amd64 build, so a single multi-arch pin cannot use it).
+// Each pin sits on its own line with a renovate marker so the custom regex manager can
+// bump tsdb and toolkit independently (datasource=deb against the packagecloud repo).
 timescaledbMatrix = {
   bookworm = {
-    // renovate: datasource=deb depName=timescaledb-2-postgresql-14
-    "14" = { tsdb = "2.19.3~debian12", toolkit = "1:1.19.0~debian12" }
-    // renovate: datasource=deb depName=timescaledb-2-postgresql-15
-    "15" = { tsdb = "2.28.3~debian12-1518", toolkit = "1:1.23.0~debian12" }
-    // renovate: datasource=deb depName=timescaledb-2-postgresql-16
-    "16" = { tsdb = "2.28.3~debian12-1614", toolkit = "1:1.23.0~debian12" }
-    // renovate: datasource=deb depName=timescaledb-2-postgresql-17
-    "17" = { tsdb = "2.28.3~debian12-1710", toolkit = "1:1.23.0~debian12" }
-    // renovate: datasource=deb depName=timescaledb-2-postgresql-18
-    "18" = { tsdb = "2.28.3~debian12-1804", toolkit = "1:1.23.0~debian12" }
+    "14" = {
+      // renovate: datasource=deb suite=bookworm depName=timescaledb-2-postgresql-14
+      tsdb = "2.19.3~debian12"
+      // renovate: datasource=deb suite=bookworm depName=timescaledb-toolkit-postgresql-14
+      toolkit = "1:1.19.0~debian12"
+    }
+    "15" = {
+      // renovate: datasource=deb suite=bookworm depName=timescaledb-2-postgresql-15
+      tsdb = "2.28.3~debian12-1518"
+      // renovate: datasource=deb suite=bookworm depName=timescaledb-toolkit-postgresql-15
+      toolkit = "1:1.23.0~debian12"
+    }
+    "16" = {
+      // renovate: datasource=deb suite=bookworm depName=timescaledb-2-postgresql-16
+      tsdb = "2.28.3~debian12-1614"
+      // renovate: datasource=deb suite=bookworm depName=timescaledb-toolkit-postgresql-16
+      toolkit = "1:1.23.0~debian12"
+    }
+    "17" = {
+      // renovate: datasource=deb suite=bookworm depName=timescaledb-2-postgresql-17
+      tsdb = "2.28.3~debian12-1710"
+      // renovate: datasource=deb suite=bookworm depName=timescaledb-toolkit-postgresql-17
+      toolkit = "1:1.23.0~debian12"
+    }
+    "18" = {
+      // renovate: datasource=deb suite=bookworm depName=timescaledb-2-postgresql-18
+      tsdb = "2.28.3~debian12-1804"
+      // renovate: datasource=deb suite=bookworm depName=timescaledb-toolkit-postgresql-18
+      toolkit = "1:1.23.0~debian12"
+    }
   }
   trixie = {
-    // renovate: datasource=deb depName=timescaledb-2-postgresql-15
-    "15" = { tsdb = "2.28.3~debian13-1518", toolkit = "1:1.23.0~debian13" }
-    // renovate: datasource=deb depName=timescaledb-2-postgresql-16
-    "16" = { tsdb = "2.28.3~debian13-1614", toolkit = "1:1.23.0~debian13" }
-    // renovate: datasource=deb depName=timescaledb-2-postgresql-17
-    "17" = { tsdb = "2.28.3~debian13-1710", toolkit = "1:1.23.0~debian13" }
-    // renovate: datasource=deb depName=timescaledb-2-postgresql-18
-    "18" = { tsdb = "2.28.3~debian13-1804", toolkit = "1:1.23.0~debian13" }
+    "15" = {
+      // renovate: datasource=deb suite=trixie depName=timescaledb-2-postgresql-15
+      tsdb = "2.28.3~debian13-1518"
+      // renovate: datasource=deb suite=trixie depName=timescaledb-toolkit-postgresql-15
+      toolkit = "1:1.23.0~debian13"
+    }
+    "16" = {
+      // renovate: datasource=deb suite=trixie depName=timescaledb-2-postgresql-16
+      tsdb = "2.28.3~debian13-1614"
+      // renovate: datasource=deb suite=trixie depName=timescaledb-toolkit-postgresql-16
+      toolkit = "1:1.23.0~debian13"
+    }
+    "17" = {
+      // renovate: datasource=deb suite=trixie depName=timescaledb-2-postgresql-17
+      tsdb = "2.28.3~debian13-1710"
+      // renovate: datasource=deb suite=trixie depName=timescaledb-toolkit-postgresql-17
+      toolkit = "1:1.23.0~debian13"
+    }
+    "18" = {
+      // renovate: datasource=deb suite=trixie depName=timescaledb-2-postgresql-18
+      tsdb = "2.28.3~debian13-1804"
+      // renovate: datasource=deb suite=trixie depName=timescaledb-toolkit-postgresql-18
+      toolkit = "1:1.23.0~debian13"
+    }
   }
 }
 
 function getPostgisPackage {
   params = [distro, postgisMajor]
   result = postgisMatrix[distro][postgisMajor]
+}
+
+// Extract the upstream PostGIS version (e.g. "3.6.4") from the apt pin string
+// "3.6.4+dfsg-2.pgdg13+1". Used in image tags so the catalog generator's regex can
+// parse <pgFull>-<postgisFull>-<date> out of them.
+function getPostgisVersion {
+  params = [distro, postgisMajor]
+  result = regex("^[0-9]+\\.[0-9]+\\.[0-9]+", postgisMatrix[distro][postgisMajor])
 }
 
 function hasTimescaledb {
@@ -125,10 +177,13 @@ target "postgis" {
     TIMESCALEDB_TOOLKIT_VERSION = getTimescaledbToolkit(cell.distro, cell.pgMajor)
   }
 
+  // Tag shape mirrors upstream postgis so the catalog generator can parse
+  // <pgFull>-<postgisFull>-<YYYYMMDDhhmm> from the dated tag. TimescaleDB version is
+  // carried in labels, not the tag.
   tags = [
-    "${fullname}:${cell.pgMajor}-${postgisMajor}-${cell.tgt}-${cell.distro}",
-    "${fullname}:${cleanVersion(cell.pgVersion)}-${postgisMajor}-${cell.tgt}-${cell.distro}",
-    "${fullname}:${cleanVersion(cell.pgVersion)}-${formatdate("YYYYMMDDhhmm", now)}-${postgisMajor}-${cell.tgt}-${cell.distro}",
+    "${fullname}:${cell.pgMajor}-${getPostgisVersion(cell.distro, postgisMajor)}-${cell.tgt}-${cell.distro}",
+    "${fullname}:${cleanVersion(cell.pgVersion)}-${getPostgisVersion(cell.distro, postgisMajor)}-${cell.tgt}-${cell.distro}",
+    "${fullname}:${cleanVersion(cell.pgVersion)}-${getPostgisVersion(cell.distro, postgisMajor)}-${formatdate("YYYYMMDDhhmm", now)}-${cell.tgt}-${cell.distro}",
   ]
 
   labels = {
