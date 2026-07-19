@@ -22,4 +22,3 @@ jobs:
           token: ${{ secrets.RENOVATE_TOKEN }}
         env:
           RENOVATE_REPOSITORIES: ${{ github.repository }}
-          RENOVATE_ALLOWED_COMMANDS: "^\\./TimescaleDB-PostGIS/sync-timescaledb-pins\\.sh$"
