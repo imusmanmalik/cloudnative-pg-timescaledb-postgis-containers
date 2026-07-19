@@ -1,0 +1,62 @@
+{
+  "12": {
+    "timescaledb": {
+      "package": "timescaledb-2-postgresql-12",
+      "version": "2.11.2~debian11"
+    },
+    "toolkit": {
+      "package": "timescaledb-toolkit-postgresql-12",
+      "version": "1:1.19.0~debian11"
+    }
+  },
+  "13": {
+    "timescaledb": {
+      "package": "timescaledb-2-postgresql-13",
+      "version": "2.15.3~debian11"
+    },
+    "toolkit": {
+      "package": "timescaledb-toolkit-postgresql-13",
+      "version": "1:1.19.0~debian11"
+    }
+  },
+  "14": {
+    "timescaledb": {
+      "package": "timescaledb-2-postgresql-14",
+      "version": "2.19.3~debian11"
+    },
+    "toolkit": {
+      "package": "timescaledb-toolkit-postgresql-14",
+      "version": "1:1.19.0~debian11"
+    }
+  },
+  "15": {
+    "timescaledb": {
+      "package": "timescaledb-2-postgresql-15",
+      "version": "2.22.0~debian11"
+    },
+    "toolkit": {
+      "package": "timescaledb-toolkit-postgresql-15",
+      "version": "1:1.22.0~debian11"
+    }
+  },
+  "16": {
+    "timescaledb": {
+      "package": "timescaledb-2-postgresql-16",
+      "version": "2.22.0~debian11"
+    },
+    "toolkit": {
+      "package": "timescaledb-toolkit-postgresql-16",
+      "version": "1:1.22.0~debian11"
+    }
+  },
+  "17": {
+    "timescaledb": {
+      "package": "timescaledb-2-postgresql-17",
+      "version": "2.21.3~debian11"
+    },
+    "toolkit": {
+      "package": "timescaledb-toolkit-postgresql-17",
+      "version": "1:1.22.0~debian11"
+    }
+  }
+}
