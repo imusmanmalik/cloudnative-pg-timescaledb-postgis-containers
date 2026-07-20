@@ -1,0 +1,20 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: ClusterImageCatalog
+metadata:
+  name: timescaledb-postgis-system-trixie
+  labels:
+    images.cnpg.io/family: timescaledb-postgis
+    images.cnpg.io/type: system
+    images.cnpg.io/os: trixie
+    images.cnpg.io/date: '20260720'
+    images.cnpg.io/publisher: cnpg.io
+spec:
+  images:
+  - major: 15
+    image: ghcr.io/imusmanmalik/timescaledb-postgis:15.18-3.6.4-202607200834-system-trixie@sha256:8a8e8b24c2213d1a4dd860b983c7d66798f76ecc038af4bf9ee6097aba543b07
+  - major: 16
+    image: ghcr.io/imusmanmalik/timescaledb-postgis:16.14-3.6.4-202607200834-system-trixie@sha256:3ee064e541348af1d90ba2de0b72d6e734bee8e70cea9559e65cfd98ce6fba8a
+  - major: 17
+    image: ghcr.io/imusmanmalik/timescaledb-postgis:17.10-3.6.4-202607200834-system-trixie@sha256:05fe5de0bb9206f36f306a96f86d39b08327a8915b05b54d0f473225c1404bf6
+  - major: 18
+    image: ghcr.io/imusmanmalik/timescaledb-postgis:18.4-3.6.4-202607200834-system-trixie@sha256:bd2409d354448b5ed2f6cc7c819a0b8e578f821034d137de5e5b75dd6705c6cd

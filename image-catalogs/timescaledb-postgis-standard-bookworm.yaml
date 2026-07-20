@@ -1,0 +1,22 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: ClusterImageCatalog
+metadata:
+  name: timescaledb-postgis-standard-bookworm
+  labels:
+    images.cnpg.io/family: timescaledb-postgis
+    images.cnpg.io/type: standard
+    images.cnpg.io/os: bookworm
+    images.cnpg.io/date: '20260720'
+    images.cnpg.io/publisher: cnpg.io
+spec:
+  images:
+  - major: 14
+    image: ghcr.io/imusmanmalik/timescaledb-postgis:14.23-3.6.4-202607200834-standard-bookworm@sha256:26601c64f8763f41b7534f450985cef8d1b73dcf64a75b84c2529507ee002a0e
+  - major: 15
+    image: ghcr.io/imusmanmalik/timescaledb-postgis:15.18-3.6.4-202607200834-standard-bookworm@sha256:9e7b9807aa239e9fe7af770bd7d1933d6f2de7f390ff8c4874af0258e95d416e
+  - major: 16
+    image: ghcr.io/imusmanmalik/timescaledb-postgis:16.14-3.6.4-202607200834-standard-bookworm@sha256:4faf5308bad732004bc8885b948c384285b94c61caee604481d94dbc9f46019f
+  - major: 17
+    image: ghcr.io/imusmanmalik/timescaledb-postgis:17.10-3.6.4-202607200834-standard-bookworm@sha256:7c25f18a90121261c7623de44086cc2157b279397ae5cd6689ad66ca4ebd727c
+  - major: 18
+    image: ghcr.io/imusmanmalik/timescaledb-postgis:18.4-3.6.4-202607200834-standard-bookworm@sha256:3ed35790da23d58281c845f468782e7cdc6d8dfe34d63ba21bf89fd909428c36
