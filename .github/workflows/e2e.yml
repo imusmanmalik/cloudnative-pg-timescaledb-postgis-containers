@@ -3,9 +3,6 @@ name: E2E (CNPG operand)
 # Heavier gate (scheduled / on-demand): prove the image works as a real CloudNativePG
 # operand - a kind cluster + CNPG operator + a Cluster CR that must reach healthy, then
 # the PostGIS + TimescaleDB extension/functional checks run against the live primary.
-#
-# NOTE: this workflow has not yet had a green live run; validate it with a manual
-# workflow_dispatch before treating it as a required check.
 
 on:
   schedule:
@@ -31,7 +28,6 @@ jobs:
       contents: read
     env:
       TARGET: ${{ github.event.inputs.target || 'postgis-3-17-standard-trixie' }}
-      IMAGE: localhost/timescaledb-postgis:e2e
     steps:
       - name: Checkout Code
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
@@ -45,13 +41,21 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4
 
+      - name: Resolve image tag for the target
+        run: |
+          spec="$(docker buildx bake -f source/docker-bake.hcl -f docker-bake.hcl --print "$TARGET" 2>/dev/null)"
+          # tags[1] is <pgFull>-<postgis>-<type>-<distro>, which carries a PostgreSQL
+          # version CNPG can parse from spec.imageName (a bare ":e2e" tag is rejected).
+          image="$(echo "$spec" | python3 -c "import sys,json;print(json.load(sys.stdin)['target']['$TARGET']['tags'][1])")"
+          echo "IMAGE=$image" >> "$GITHUB_ENV"
+          echo "Using image: $image"
+
       - name: Build image (amd64, load)
         run: |
           docker buildx bake -f source/docker-bake.hcl -f docker-bake.hcl "$TARGET" \
             --set '*.platform=linux/amd64' \
             --set '*.output=type=docker' \
             --provenance=false --sbom=false \
-            --set "${TARGET}.tags=${IMAGE}" \
             --load
 
       - name: Create kind cluster
@@ -72,14 +76,14 @@ jobs:
 
       - name: Create Cluster referencing the image
         run: |
-          cat <<'YAML' | kubectl apply -f -
+          cat <<YAML | kubectl apply -f -
           apiVersion: postgresql.cnpg.io/v1
           kind: Cluster
           metadata:
             name: tsdb-postgis-e2e
           spec:
             instances: 1
-            imageName: localhost/timescaledb-postgis:e2e
+            imageName: ${IMAGE}
             imagePullPolicy: Never
             postgresql:
               shared_preload_libraries:
