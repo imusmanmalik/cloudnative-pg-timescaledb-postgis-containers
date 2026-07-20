@@ -11,10 +11,10 @@ metadata:
 spec:
   images:
   - major: 15
-    image: ghcr.io/imusmanmalik/timescaledb-postgis:15.18-3.6.4-202607200834-system-trixie@sha256:8a8e8b24c2213d1a4dd860b983c7d66798f76ecc038af4bf9ee6097aba543b07
+    image: ghcr.io/imusmanmalik/timescaledb-postgis:15.18-3.6.4-202607201105-system-trixie@sha256:23bd912301e4922988691424863ec2f7b9d70a95f0209c3e45c3e4237e6e3ec6
   - major: 16
-    image: ghcr.io/imusmanmalik/timescaledb-postgis:16.14-3.6.4-202607200834-system-trixie@sha256:3ee064e541348af1d90ba2de0b72d6e734bee8e70cea9559e65cfd98ce6fba8a
+    image: ghcr.io/imusmanmalik/timescaledb-postgis:16.14-3.6.4-202607201105-system-trixie@sha256:c4dccd8fff278bb1664892106392eb797f6187add7b48295b29b70db65b87e53
   - major: 17
-    image: ghcr.io/imusmanmalik/timescaledb-postgis:17.10-3.6.4-202607200834-system-trixie@sha256:05fe5de0bb9206f36f306a96f86d39b08327a8915b05b54d0f473225c1404bf6
+    image: ghcr.io/imusmanmalik/timescaledb-postgis:17.10-3.6.4-202607201105-system-trixie@sha256:9fafe2c618ac51197033c6eda6357f7f0078aab8d06d89c7030df4d8dd41e7aa
   - major: 18
-    image: ghcr.io/imusmanmalik/timescaledb-postgis:18.4-3.6.4-202607200834-system-trixie@sha256:bd2409d354448b5ed2f6cc7c819a0b8e578f821034d137de5e5b75dd6705c6cd
+    image: ghcr.io/imusmanmalik/timescaledb-postgis:18.4-3.6.4-202607201105-system-trixie@sha256:26b458d8947c8cc4bbb37a3d15da74caab9f67fd64521f5799e9e12860da60fb

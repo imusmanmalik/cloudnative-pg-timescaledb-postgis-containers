@@ -11,12 +11,12 @@ metadata:
 spec:
   images:
   - major: 14
-    image: ghcr.io/imusmanmalik/timescaledb-postgis:14.23-3.6.4-202607200834-standard-bookworm@sha256:26601c64f8763f41b7534f450985cef8d1b73dcf64a75b84c2529507ee002a0e
+    image: ghcr.io/imusmanmalik/timescaledb-postgis:14.23-3.6.4-202607201105-standard-bookworm@sha256:d0770b35db8ad09c086169610dae6bd5b9435d0ff744338c7a7e37dc1de30618
   - major: 15
-    image: ghcr.io/imusmanmalik/timescaledb-postgis:15.18-3.6.4-202607200834-standard-bookworm@sha256:9e7b9807aa239e9fe7af770bd7d1933d6f2de7f390ff8c4874af0258e95d416e
+    image: ghcr.io/imusmanmalik/timescaledb-postgis:15.18-3.6.4-202607201105-standard-bookworm@sha256:82ec1621947792f442dc347b0eb82ea4195727a2bf1b278b7ce4e3009b57645e
   - major: 16
-    image: ghcr.io/imusmanmalik/timescaledb-postgis:16.14-3.6.4-202607200834-standard-bookworm@sha256:4faf5308bad732004bc8885b948c384285b94c61caee604481d94dbc9f46019f
+    image: ghcr.io/imusmanmalik/timescaledb-postgis:16.14-3.6.4-202607201105-standard-bookworm@sha256:aa74a6f637ad7e35eee84b034bb334bd4e48fb75238941aa3f049b5727f12581
   - major: 17
-    image: ghcr.io/imusmanmalik/timescaledb-postgis:17.10-3.6.4-202607200834-standard-bookworm@sha256:7c25f18a90121261c7623de44086cc2157b279397ae5cd6689ad66ca4ebd727c
+    image: ghcr.io/imusmanmalik/timescaledb-postgis:17.10-3.6.4-202607201105-standard-bookworm@sha256:4abddf74f0767c4a95356579cf341587203650abd6d88facbd6e552185c5e14f
   - major: 18
-    image: ghcr.io/imusmanmalik/timescaledb-postgis:18.4-3.6.4-202607200834-standard-bookworm@sha256:3ed35790da23d58281c845f468782e7cdc6d8dfe34d63ba21bf89fd909428c36
+    image: ghcr.io/imusmanmalik/timescaledb-postgis:18.4-3.6.4-202607201105-standard-bookworm@sha256:b9b70b98132aeba74d6ba211cd10f69b36d3525399b53e3abdbee8b8573ba19a
