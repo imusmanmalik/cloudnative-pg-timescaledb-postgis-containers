@@ -5,6 +5,12 @@ on:
     # Rebuild weekly against the current CNPG base images, on Mondays
     - cron: 0 10 * * 1
   pull_request:
+    # Only run the full matrix build when something build-affecting changes; trivial
+    # PRs (docs, other workflow files, action-SHA bumps) should not spawn 18 builds.
+    paths:
+      - Dockerfile
+      - docker-bake.hcl
+      - .github/workflows/bake.yml
   workflow_dispatch:
     inputs:
       environment:
