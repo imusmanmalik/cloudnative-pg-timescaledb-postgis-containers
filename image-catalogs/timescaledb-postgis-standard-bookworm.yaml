@@ -6,17 +6,17 @@ metadata:
     images.cnpg.io/family: timescaledb-postgis
     images.cnpg.io/type: standard
     images.cnpg.io/os: bookworm
-    images.cnpg.io/date: '20260824'
+    images.cnpg.io/date: '20260831'
     images.cnpg.io/publisher: cnpg.io
 spec:
   images:
   - major: 14
-    image: ghcr.io/imusmanmalik/timescaledb-postgis:14.24-3.6.4-202608241018-standard-bookworm@sha256:75198abed68e34a7ee683e3821d37805eb0cc1c235784070188063c8f986a419
+    image: ghcr.io/imusmanmalik/timescaledb-postgis:14.24-3.6.4-202608311018-standard-bookworm@sha256:a70feaa19b0f1d29d52b26927f98d6273e7ec000208db8d0545a56efa5bc86c5
   - major: 15
-    image: ghcr.io/imusmanmalik/timescaledb-postgis:15.19-3.6.4-202608241017-standard-bookworm@sha256:3ca67babc757f16fad1ee5499904da64811b616142d519ce6d47bfac5ca128eb
+    image: ghcr.io/imusmanmalik/timescaledb-postgis:15.19-3.6.4-202608311018-standard-bookworm@sha256:c70bb141d2446407d5cb007bcb1e5af9055776a273668433c1a30b2d911a48bc
   - major: 16
-    image: ghcr.io/imusmanmalik/timescaledb-postgis:16.15-3.6.4-202608241017-standard-bookworm@sha256:7a700b8272fc2c4afad3fe97dea16db6615c5ac9316d4c224c239dab0d55dfbd
+    image: ghcr.io/imusmanmalik/timescaledb-postgis:16.15-3.6.4-202608311018-standard-bookworm@sha256:c2fc08aed59529512b543fdf2d3f4520eb0bd3e77dd05ed9da7299c16d6f22a8
   - major: 17
-    image: ghcr.io/imusmanmalik/timescaledb-postgis:17.11-3.6.4-202608241018-standard-bookworm@sha256:fafdb75e21fe88c5b85e46addeb59fa57f51d3db8b4f2d47858517bbd653b17d
+    image: ghcr.io/imusmanmalik/timescaledb-postgis:17.11-3.6.4-202608311018-standard-bookworm@sha256:0ae11bde8af48118083521418dfafeb5cc7098b66133eac0267809fcfef4c753
   - major: 18
-    image: ghcr.io/imusmanmalik/timescaledb-postgis:18.6-3.6.4-202608241018-standard-bookworm@sha256:8f3bfb072ae7779e69a07a38014f48b5a2be72600974261884e3c91307d1886a
+    image: ghcr.io/imusmanmalik/timescaledb-postgis:18.6-3.6.4-202608311018-standard-bookworm@sha256:225d62e311a1603c841ab9297d6ae9b3e673f3dcb06791d1cc7aa4e387e8f2c2
