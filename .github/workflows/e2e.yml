@@ -23,7 +23,7 @@ defaults:
 jobs:
   e2e:
     name: E2E ${{ github.event.inputs.target || 'postgis-3-17-standard-trixie' }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
     env:
