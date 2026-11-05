@@ -44,14 +44,20 @@ jobs:
           git status
           git diff --staged
 
+      # main requires signed commits and enforces that for admins too. The commit below
+      # is unsigned, so lift admin enforcement for the push and restore it afterwards.
       - name: Temporarily disable "include administrators" branch protection
-        if: ${{ always() && github.ref == 'refs/heads/main' }}
+        if: ${{ github.ref == 'refs/heads/main' }}
         id: disable_include_admins
-        uses: benjefferies/branch-protection-bot@af281f37de86139d1c7a27b91176b5dc1c2c827c # v1.1.2
-        with:
-          access_token: ${{ secrets.REPO_GHA_PAT }}
-          branch: main
-          enforce_admins: false
+        env:
+          GH_TOKEN: ${{ secrets.REPO_GHA_PAT }}
+          PROTECTION: repos/${{ github.repository }}/branches/main/protection/enforce_admins
+        run: |
+          initial_status="$(gh api "$PROTECTION" --jq .enabled)"
+          echo "initial_status=$initial_status" >> "$GITHUB_OUTPUT"
+          if [ "$initial_status" = true ]; then
+            gh api -X DELETE "$PROTECTION"
+          fi
 
       - uses: EndBug/add-and-commit@cc9c08ba6c8df3b93a8f2db63e89b98368ae2ae8 # v11
         if: ${{ github.ref == 'refs/heads/main' }}
@@ -62,9 +68,8 @@ jobs:
           message: 'chore: update imageCatalogs'
 
       - name: Enable "include administrators" branch protection
-        uses: benjefferies/branch-protection-bot@af281f37de86139d1c7a27b91176b5dc1c2c827c # v1.1.2
-        if: ${{ always() && github.ref == 'refs/heads/main' }}
-        with:
-          access_token: ${{ secrets.REPO_GHA_PAT }}
-          branch: main
-          enforce_admins: ${{ steps.disable_include_admins.outputs.initial_status }}
+        if: ${{ always() && github.ref == 'refs/heads/main' && steps.disable_include_admins.outputs.initial_status == 'true' }}
+        env:
+          GH_TOKEN: ${{ secrets.REPO_GHA_PAT }}
+          PROTECTION: repos/${{ github.repository }}/branches/main/protection/enforce_admins
+        run: gh api -X POST "$PROTECTION"
