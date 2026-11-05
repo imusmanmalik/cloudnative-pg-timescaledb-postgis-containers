@@ -31,11 +31,11 @@ variable "imageTypes" {
 postgisMatrix = {
   bookworm = {
     // renovate: suite=bookworm-pgdg depName=postgis
-    "3" = "3.6.4+dfsg-2.pgdg12+1"
+    "3" = "3.7.0+dfsg-1.pgdg12+1"
   }
   trixie = {
     // renovate: suite=trixie-pgdg depName=postgis
-    "3" = "3.6.4+dfsg-2.pgdg13+1"
+    "3" = "3.7.0+dfsg-1.pgdg13+1"
   }
 }
 
