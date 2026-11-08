@@ -35,7 +35,7 @@ jobs:
       - name: Fetch the CNPG source bake file
         run: |
           mkdir -p source
-          curl -sSL https://raw.githubusercontent.com/cloudnative-pg/postgres-containers/main/docker-bake.hcl \
+          curl -fsSL --retry 3 --retry-all-errors https://raw.githubusercontent.com/cloudnative-pg/postgres-containers/main/docker-bake.hcl \
             -o source/docker-bake.hcl
 
       - name: Set up Docker Buildx
@@ -66,7 +66,7 @@ jobs:
 
       - name: Install CNPG operator
         run: |
-          TAG=$(curl -s https://api.github.com/repos/cloudnative-pg/cloudnative-pg/releases/latest | jq -r .tag_name)
+          TAG=$(curl -fsS --retry 3 --retry-all-errors https://api.github.com/repos/cloudnative-pg/cloudnative-pg/releases/latest | jq -r .tag_name)
           VER=${TAG#v}
           BRANCH="release-${VER%.*}"
           echo "Installing CNPG ${VER} (${BRANCH})"

@@ -1,0 +1,81 @@
+name: Watch scheduled builds
+
+# A failed scheduled build blocks image updates, and nothing else reports it. Retry a
+# failed scheduled Bake Images run once, to ride out network and runner flakes. Report any
+# other failure in an issue per workflow, and close that issue on the next green run.
+# This runs as its own workflow because a run cannot rerun itself while in progress.
+
+on:
+  workflow_run:
+    workflows:
+      - Bake Images
+      - Update Catalogs
+    types:
+      - completed
+    branches:
+      - main
+
+permissions: {}
+
+jobs:
+  watch:
+    name: Retry or report
+    if: >-
+      github.event.workflow_run.event == 'schedule' ||
+      github.event.workflow_run.event == 'repository_dispatch'
+    runs-on: ubuntu-26.04
+    permissions:
+      actions: write
+      issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      LABEL: build-failed
+      WORKFLOW: ${{ github.event.workflow_run.name }}
+      EVENT: ${{ github.event.workflow_run.event }}
+      CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+      ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+      RUN_ID: ${{ github.event.workflow_run.id }}
+      RUN_URL: ${{ github.event.workflow_run.html_url }}
+    steps:
+      - name: Retry once or update the tracking issue
+        shell: "bash -Eeuo pipefail {0}"
+        run: |
+          title="Scheduled build failing: $WORKFLOW"
+
+          case "$CONCLUSION" in
+            success) state=green ;;
+            failure | timed_out | startup_failure) state=red ;;
+            *) echo "Conclusion $CONCLUSION, nothing to do"; exit 0 ;;
+          esac
+
+          if [ "$state" = red ] && [ "$WORKFLOW" = "Bake Images" ] && [ "$EVENT" = schedule ] && [ "$ATTEMPT" = 1 ]; then
+            echo "Retrying failed jobs of run $RUN_ID"
+            gh run rerun "$RUN_ID" --failed
+            exit 0
+          fi
+
+          open="$(gh issue list --label "$LABEL" --state open --json number,title \
+            | jq -r --arg t "$title" '[.[] | select(.title == $t)][0].number // empty')"
+
+          if [ "$state" = green ]; then
+            if [ -n "$open" ]; then
+              gh issue close "$open" --comment "The next run passed, so this is resolved. $RUN_URL"
+            fi
+            exit 0
+          fi
+
+          failed="$(gh run view "$RUN_ID" --json jobs \
+            --jq '[.jobs[] | select(.conclusion == "failure") | "- " + .name] | join("\n")')"
+          body="$(printf '%s\n\n%s\n\n%s\n' \
+            "The scheduled run of $WORKFLOW failed. $RUN_URL" \
+            "These jobs failed, so their images or catalogs were not refreshed." \
+            "${failed:-- (no job-level failure, check the run)}")"
+
+          if [ -n "$open" ]; then
+            gh issue comment "$open" --body "$body"
+          else
+            gh label create "$LABEL" --color B60205 \
+              --description "A scheduled build or catalog refresh failed" --force
+            gh issue create --title "$title" --label "$LABEL" --body "$body"
+          fi

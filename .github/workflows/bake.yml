@@ -38,7 +38,7 @@ jobs:
       - name: Fetch the CNPG source bake file
         run: |
           mkdir -p source
-          curl -sSL https://raw.githubusercontent.com/cloudnative-pg/postgres-containers/main/docker-bake.hcl \
+          curl -fsSL --retry 3 --retry-all-errors https://raw.githubusercontent.com/cloudnative-pg/postgres-containers/main/docker-bake.hcl \
             -o source/docker-bake.hcl
 
       - name: Get supported PostgreSQL versions
@@ -54,22 +54,9 @@ jobs:
           echo "PostgreSQL versions: [$VERSIONS]"
           echo "versions=[$VERSIONS]" >> "$GITHUB_OUTPUT"
 
-  # The reusable bake workflow copies to production on every schedule run and has no hook
-  # for our own tests, so the smoke test has to pass before it is called. PRs skip this
-  # job because validate.yml already runs on them.
-  smoke:
-    name: Smoke test
-    if: github.event_name != 'pull_request'
-    permissions:
-      contents: read
-    uses: ./.github/workflows/validate.yml
-
   Bake:
     name: Bake
-    needs:
-      - get_versions
-      - smoke
-    if: ${{ !failure() && !cancelled() }}
+    needs: get_versions
     permissions:
       packages: write
       contents: read
@@ -79,16 +66,12 @@ jobs:
       fail-fast: false
       matrix:
         version: ${{ fromJson(needs.get_versions.outputs.versions) }}
-    uses: cloudnative-pg/postgres-containers/.github/workflows/bake_targets.yml@main
+    uses: ./.github/workflows/bake-major.yml
     with:
-      # inputs.environment is null on pull_request/schedule; the reusable workflow
-      # requires it. Default to testing - production promotion is gated separately on
-      # event_name == schedule / explicit production dispatch.
+      # inputs.environment is null on pull_request and schedule. Production promotion is
+      # decided inside the CNPG workflow from the event, not from this value.
       environment: ${{ github.event.inputs.environment || 'testing' }}
       postgresql_version: ${{ matrix.version }}
-      target: "postgis"
-      bake_files: "./source/docker-bake.hcl,./docker-bake.hcl"
-      bake_remote_source: "cloudnative-pg/postgres-containers"
     secrets:
       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
@@ -98,7 +81,10 @@ jobs:
     runs-on: ubuntu-26.04
     permissions:
       contents: write
+    # Run even when some majors failed. The catalogs are generated from the production
+    # registry, so a held-back major keeps its last published image.
     if: |
+      !cancelled() && needs.Bake.result != 'skipped' &&
       github.ref == 'refs/heads/main' &&
       ( github.event.inputs.environment == 'production' || github.event_name == 'schedule' )
     steps:
