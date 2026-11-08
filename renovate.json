@@ -17,12 +17,12 @@
   "customManagers": [
     {
       "customType": "regex",
-      "description": "PostGIS apt pin (PGDG) in docker-bake.hcl",
+      "description": "PGDG apt pins (PostGIS, pgRouting, address_standardizer, tiger geocoder) in docker-bake.hcl",
       "managerFilePatterns": [
         "/docker-bake.hcl/"
       ],
       "matchStrings": [
-        "\\/\\/\\s*renovate:\\s*suite=(?<suite>[a-z]+-pgdg)\\s+depName=(?<depName>postgis)\\s*\\n\\s*\"[A-Za-z0-9_-]+\"\\s*=\\s*\"(?<currentValue>[^\"]+)\""
+        "\\/\\/\\s*renovate:\\s*suite=(?<suite>[a-z]+-pgdg)\\s+depName=(?<depName>[a-z0-9-]+)\\s*\\n\\s*\"[A-Za-z0-9_-]+\"\\s*=\\s*\"(?<currentValue>[^\"]+)\""
       ],
       "datasourceTemplate": "deb",
       "versioningTemplate": "deb",
@@ -51,6 +51,17 @@
         "/^timescaledb-/"
       ],
       "groupName": "TimescaleDB packages"
+    },
+    {
+      "description": "address_standardizer must follow the PostGIS minor, so bump PGDG pins together",
+      "matchDatasources": [
+        "deb"
+      ],
+      "matchPackageNames": [
+        "postgis",
+        "/^postgresql-[0-9]+-(pgrouting|address-standardizer|postgis-tiger-geocoder)$/"
+      ],
+      "groupName": "PostGIS packages"
     },
     {
       "matchManagers": [
