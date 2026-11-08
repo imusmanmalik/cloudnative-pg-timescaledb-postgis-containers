@@ -1,0 +1,36 @@
+name: Clean testing images
+
+# Delete -testing operand images older than a week. Production images live in a separate
+# package and are never selected. Since v3.1.0 the action keeps the untagged per-arch
+# children of every multi-arch index it keeps, and it skips a package when it cannot
+# read a manifest.
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Only list the versions that would be deleted"
+        type: boolean
+        default: true
+
+permissions: {}
+
+jobs:
+  clean-ghcr:
+    name: Delete old testing images
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Delete timescaledb-postgis-testing versions older than a week
+        uses: snok/container-retention-policy@d3bdcf5ce9b05f685154e4a16c39233b245e3d53 # v3.1.0
+        with:
+          account: user
+          token: ${{ secrets.GITHUB_TOKEN }}
+          image-names: timescaledb-postgis-testing
+          cut-off: 1w
+          keep-n-most-recent: 1
+          dry-run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}

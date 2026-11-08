@@ -12,7 +12,7 @@ The images use the same [Docker Bake](https://docs.docker.com/build/bake/) setup
 ## Highlights
 
 - Based on the official operand image. It runs as `USER 26` with the upstream entrypoint, so it drops straight into a `Cluster`.
-- One TimescaleDB, Toolkit and PostGIS version is pinned per PostgreSQL major and distribution. A rebuild does not change extension versions.
+- Every extension version is pinned per PostgreSQL major or distribution. A rebuild does not change extension versions.
 - PostgreSQL 14 to 18 on Debian **bookworm** and **trixie**, in **standard** and **system** flavours.
 - Every standard image is built for amd64 and arm64 and smoke-tested at its pinned extension versions, both on each PR that changes the build and before every build that publishes.
 - Renovate tracks the apt pins. A weekly bake rebuilds on the latest CloudNativePG base, so PostgreSQL minor and security updates come through.
@@ -43,6 +43,8 @@ All images are published as `ghcr.io/imusmanmalik/timescaledb-postgis`.
 | 18 | built | built |
 
 Each cell is built as `standard` and `system`, for `linux/amd64` and `linux/arm64`. TimescaleDB publishes no PostgreSQL 14 packages for trixie, so that cell is excluded.
+
+PostgreSQL 14 reaches end of life on 12 November 2026. TimescaleDB stopped releasing for it at 2.19.3, so the PostgreSQL 14 images only get base image and security updates. This repository follows CloudNativePG. When CloudNativePG stops publishing PostgreSQL 14 images, the PostgreSQL 14 builds stop here too and major 14 leaves the image catalogs. Images already published stay in the registry. Plan an upgrade to a newer major, and see the [14 to 15 upgrade notes](https://github.com/imusmanmalik/cloudnative-pg-timescaledb-postgis-containers/issues/51) for the Toolkit step.
 
 ## Tags
 
@@ -134,7 +136,7 @@ docker buildx bake -f source/docker-bake.hcl -f docker-bake.hcl \
 `test/smoke.sh` boots an image, creates every extension and runs TimescaleDB, Toolkit, PostGIS and pgRouting queries. Set the `EXPECTED_*` variables to also assert exact versions.
 
 ```bash
-EXPECTED_TIMESCALEDB=2.31.0 EXPECTED_TOOLKIT=1.27.0 EXPECTED_POSTGIS=3.7.0 \
+EXPECTED_TIMESCALEDB=2.31.0 EXPECTED_TOOLKIT=1.27.0 EXPECTED_POSTGIS=3.7.0 EXPECTED_PGROUTING=4.0.2 \
   test/smoke.sh ghcr.io/imusmanmalik/timescaledb-postgis:17.11-3.7.0-standard-trixie
 ```
 
@@ -142,9 +144,10 @@ EXPECTED_TIMESCALEDB=2.31.0 EXPECTED_TOOLKIT=1.27.0 EXPECTED_POSTGIS=3.7.0 \
 
 ## How it stays up to date
 
-- Renovate (`renovate.json`) bumps the TimescaleDB and Toolkit pins from packagecloud, the PostGIS pin from PGDG, and the GitHub Actions.
+- Renovate (`renovate.json`) bumps the TimescaleDB and Toolkit pins from packagecloud, the PostGIS, address_standardizer, tiger geocoder and pgRouting pins from PGDG, and the GitHub Actions. The PGDG pins move together in one PR.
 - Each pin bump opens a PR that runs the smoke tests and a full bake of all 18 images.
 - The weekly bake smoke-tests every standard image on the current CloudNativePG base images, then rebuilds, publishes, and refreshes the image catalogs.
+- A daily job deletes `timescaledb-postgis-testing` images older than a week. Production images are never deleted.
 
 ## Credits
 
