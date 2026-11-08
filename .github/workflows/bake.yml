@@ -35,16 +35,22 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
+      - name: Fetch the CNPG source bake file
+        run: |
+          mkdir -p source
+          curl -sSL https://raw.githubusercontent.com/cloudnative-pg/postgres-containers/main/docker-bake.hcl \
+            -o source/docker-bake.hcl
+
       - name: Get supported PostgreSQL versions
         id: get_versions
         run: |
-          # Only the majors we ship a TimescaleDB pin for (the timescaledbMatrix keys),
-          # so a PG major CNPG builds but TimescaleDB lacks (e.g. a new preview) does not
-          # spawn an empty, build-everything matrix leg.
-          # Match the timescaledbMatrix major keys ("14" = {, "15" = {, ...). Only those
-          # lines have a quoted numeric key followed by "= {"; postgisMatrix uses "= \"".
-          VERSIONS="$(sed -n 's/^[[:space:]]*"\([0-9][0-9]*\)"[[:space:]]*=[[:space:]]*{.*/\1/p' docker-bake.hcl \
-            | sort -nu | paste -sd,)"
+          # Read the majors from the targets bake will build. That is the intersection of
+          # the CNPG versions and our TimescaleDB pins, so a major that either side drops
+          # (PostgreSQL 14 at end of life, a preview without TimescaleDB) gets no leg. An
+          # empty leg would run bake with no targets, which falls back to the default group.
+          VERSIONS="$(docker buildx bake -f source/docker-bake.hcl -f docker-bake.hcl --print postgis 2>/dev/null \
+            | jq -r '[.target[].args.PG_MAJOR] | unique | map(tonumber) | sort | join(",")')"
+          test -n "$VERSIONS"
           echo "PostgreSQL versions: [$VERSIONS]"
           echo "versions=[$VERSIONS]" >> "$GITHUB_OUTPUT"
 
