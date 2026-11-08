@@ -48,9 +48,22 @@ jobs:
           echo "PostgreSQL versions: [$VERSIONS]"
           echo "versions=[$VERSIONS]" >> "$GITHUB_OUTPUT"
 
+  # The reusable bake workflow copies to production on every schedule run and has no hook
+  # for our own tests, so the smoke test has to pass before it is called. PRs skip this
+  # job because validate.yml already runs on them.
+  smoke:
+    name: Smoke test
+    if: github.event_name != 'pull_request'
+    permissions:
+      contents: read
+    uses: ./.github/workflows/validate.yml
+
   Bake:
     name: Bake
-    needs: get_versions
+    needs:
+      - get_versions
+      - smoke
+    if: ${{ !failure() && !cancelled() }}
     permissions:
       packages: write
       contents: read
