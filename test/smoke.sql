@@ -22,6 +22,14 @@ CREATE EXTENSION postgis_topology;
 CREATE EXTENSION timescaledb;
 CREATE EXTENSION timescaledb_toolkit;
 CREATE EXTENSION pgrouting;
+CREATE EXTENSION address_standardizer;
+CREATE EXTENSION address_standardizer_data_us;
+
+-- PGDG packages the tiger geocoder for PostgreSQL 16 and later only.
+SELECT current_setting('server_version_num')::int >= 160000 AS has_tiger_geocoder \gset
+\if :has_tiger_geocoder
+CREATE EXTENSION postgis_tiger_geocoder CASCADE;
+\endif
 
 -- psql does not interpolate :'var' inside dollar-quoted blocks, so the expectation is
 -- compared in plain SQL: on mismatch a descriptive string is cast to int, which fails
@@ -57,10 +65,14 @@ SELECT ST_AsText(ST_MakePoint(1, 2)) AS point;
 SELECT round(ST_Distance(ST_MakePoint(0, 0), ST_MakePoint(3, 4))::numeric, 1) AS distance;
 
 -- pgRouting functional: shortest path on a trivial graph
-CREATE TABLE edges(id bigint, source bigint, target bigint, cost double precision, reverse_cost double precision);
-INSERT INTO edges VALUES (1, 1, 2, 1, 1), (2, 2, 3, 1, 1), (3, 1, 3, 5, 5);
+CREATE TABLE public.route_edges(id bigint, source bigint, target bigint, cost double precision, reverse_cost double precision);
+INSERT INTO public.route_edges VALUES (1, 1, 2, 1, 1), (2, 2, 3, 1, 1), (3, 1, 3, 5, 5);
 SELECT count(*) AS route_hops
-FROM pgr_dijkstra('SELECT id, source, target, cost, reverse_cost FROM edges', 1, 3);
+FROM pgr_dijkstra('SELECT id, source, target, cost, reverse_cost FROM public.route_edges', 1, 3);
+
+-- address_standardizer functional: parse a US address with the bundled rules
+SELECT (standardize_address('us_lex', 'us_gaz', 'us_rules',
+  '1 Main St, Boston, MA 02101')).name AS standardized_street;
 
 -- Report installed extension versions
 SELECT extname, extversion FROM pg_extension ORDER BY extname;

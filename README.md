@@ -24,7 +24,9 @@ The images use the same [Docker Bake](https://docs.docker.com/build/bake/) setup
 | `timescaledb` + loader | packagecloud (`timescale/timescaledb`) | per PostgreSQL major and distro |
 | `timescaledb_toolkit` | packagecloud | per PostgreSQL major and distro |
 | `postgis`, `postgis_topology` | PGDG | per distro |
-| `pgrouting` | PGDG | no, follows PGDG |
+| `address_standardizer`, `address_standardizer_data_us` | PGDG | per distro |
+| `postgis_tiger_geocoder` | PGDG, PostgreSQL 16 and later only | per distro |
+| `pgrouting` | PGDG | per distro |
 
 The CloudNativePG base already has `pgaudit`, `pgvector` and `pg_failover_slots`. The **system** flavour also has Barman Cloud for in-cluster backups.
 

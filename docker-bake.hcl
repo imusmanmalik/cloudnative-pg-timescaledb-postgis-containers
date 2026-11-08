@@ -39,6 +39,31 @@ postgisMatrix = {
   }
 }
 
+// pgRouting, address_standardizer and the tiger geocoder have one version per distro for
+// every PostgreSQL major. The major in depName is only a Renovate lookup key.
+pgRoutingMatrix = {
+  // renovate: suite=bookworm-pgdg depName=postgresql-18-pgrouting
+  "bookworm" = "4.0.2-1.pgdg12+1"
+  // renovate: suite=trixie-pgdg depName=postgresql-18-pgrouting
+  "trixie" = "4.0.2-1.pgdg13+1"
+}
+
+// Since PostGIS 3.7 Debian ships address_standardizer outside the postgis package.
+addressStandardizerMatrix = {
+  // renovate: suite=bookworm-pgdg depName=postgresql-18-address-standardizer
+  "bookworm" = "3.7.0-1.pgdg12+1"
+  // renovate: suite=trixie-pgdg depName=postgresql-18-address-standardizer
+  "trixie" = "3.7.0-1.pgdg13+1"
+}
+
+// Packaged for PostgreSQL 16 and later only.
+tigerGeocoderMatrix = {
+  // renovate: suite=bookworm-pgdg depName=postgresql-18-postgis-tiger-geocoder
+  "bookworm" = "2025.2-1.pgdg12+1"
+  // renovate: suite=trixie-pgdg depName=postgresql-18-postgis-tiger-geocoder
+  "trixie" = "2025.2-1.pgdg13+1"
+}
+
 // TimescaleDB + toolkit apt pins per distro and PG major (packagecloud). A (distro, major)
 // pair absent here is dropped from the build matrix: pg14 has no trixie packages, and any
 // preview major (e.g. 19) has none at all. pg14 bookworm is frozen at 2.19.3 upstream, and
@@ -169,12 +194,15 @@ target "postgis" {
   platforms  = ["linux/amd64", "linux/arm64"]
 
   args = {
-    BASE                        = getBaseImage(cell.pgVersion, cell.tgt, cell.distro)
-    PG_MAJOR                    = cell.pgMajor
-    POSTGIS_MAJOR               = postgisMajor
-    POSTGIS_VERSION             = getPostgisPackage(cell.distro, postgisMajor)
-    TIMESCALEDB_VERSION         = getTimescaledb(cell.distro, cell.pgMajor)
-    TIMESCALEDB_TOOLKIT_VERSION = getTimescaledbToolkit(cell.distro, cell.pgMajor)
+    BASE                         = getBaseImage(cell.pgVersion, cell.tgt, cell.distro)
+    PG_MAJOR                     = cell.pgMajor
+    POSTGIS_MAJOR                = postgisMajor
+    POSTGIS_VERSION              = getPostgisPackage(cell.distro, postgisMajor)
+    PGROUTING_VERSION            = pgRoutingMatrix[cell.distro]
+    ADDRESS_STANDARDIZER_VERSION = addressStandardizerMatrix[cell.distro]
+    TIGER_GEOCODER_VERSION       = tigerGeocoderMatrix[cell.distro]
+    TIMESCALEDB_VERSION          = getTimescaledb(cell.distro, cell.pgMajor)
+    TIMESCALEDB_TOOLKIT_VERSION  = getTimescaledbToolkit(cell.distro, cell.pgMajor)
   }
 
   // Tag shape mirrors upstream postgis so the catalog generator can parse
