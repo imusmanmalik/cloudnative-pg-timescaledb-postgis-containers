@@ -140,13 +140,14 @@ EXPECTED_TIMESCALEDB=2.31.0 EXPECTED_TOOLKIT=1.27.0 EXPECTED_POSTGIS=3.7.0 EXPEC
   test/smoke.sh ghcr.io/imusmanmalik/timescaledb-postgis:17.11-3.7.0-standard-trixie
 ```
 
-`validate.yml` runs the same smoke test on every PR that changes the build, and `bake.yml` runs it before any build that publishes. A failed smoke test stops the build, so nothing reaches the registry. `e2e.yml` runs the checks weekly against a live CloudNativePG cluster on kind.
+`validate.yml` runs the same smoke test on every PR that changes the build, and `bake.yml` runs it for each PostgreSQL major before that major is built and published. A failed smoke test stops only its own major, so nothing untested reaches the registry and the other majors still get rebuilt. `e2e.yml` runs the checks weekly against a live CloudNativePG cluster on kind.
 
 ## How it stays up to date
 
 - Renovate (`renovate.json`) bumps the TimescaleDB and Toolkit pins from packagecloud, the PostGIS, address_standardizer, tiger geocoder and pgRouting pins from PGDG, and the GitHub Actions. The PGDG pins move together in one PR.
 - Each pin bump opens a PR that runs the smoke tests and a full bake of all 18 images.
-- The weekly bake smoke-tests every standard image on the current CloudNativePG base images, then rebuilds, publishes, and refreshes the image catalogs.
+- The weekly bake smoke-tests every standard image on the current CloudNativePG base images, then rebuilds, publishes, and refreshes the image catalogs. Each PostgreSQL major is tested and published on its own.
+- A failed scheduled bake is retried once. If it still fails, or the catalog refresh fails, an issue labelled `build-failed` is opened, and the next green run closes it.
 - A daily job deletes `timescaledb-postgis-testing` images older than a week. Production images are never deleted.
 
 ## Credits

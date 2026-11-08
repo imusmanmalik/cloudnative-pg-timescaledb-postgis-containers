@@ -15,6 +15,12 @@ on:
       - .github/workflows/validate.yml
   workflow_dispatch:
   workflow_call:
+    inputs:
+      postgresql_version:
+        description: "Only test this PostgreSQL major. Empty tests every major."
+        required: false
+        type: string
+        default: ""
 
 permissions: {}
 
@@ -37,14 +43,17 @@ jobs:
       - name: Fetch the CNPG source bake file
         run: |
           mkdir -p source
-          curl -sSL https://raw.githubusercontent.com/cloudnative-pg/postgres-containers/main/docker-bake.hcl \
+          curl -fsSL --retry 3 --retry-all-errors https://raw.githubusercontent.com/cloudnative-pg/postgres-containers/main/docker-bake.hcl \
             -o source/docker-bake.hcl
 
       - name: List standard targets
         id: targets
+        env:
+          PG_VERSION: ${{ inputs.postgresql_version }}
         run: |
           targets="$(docker buildx bake -f source/docker-bake.hcl -f docker-bake.hcl --print postgis 2>/dev/null \
-            | jq -c '[.target | keys[] | select(test("-standard-"))]')"
+            | jq -c --arg v "$PG_VERSION" \
+              '[.target | keys[] | select(test("-standard-")) | select($v == "" or test("-\($v)-"))]')"
           test "$(echo "$targets" | jq length)" -gt 0
           echo "targets=$targets" >> "$GITHUB_OUTPUT"
 
@@ -73,7 +82,7 @@ jobs:
       - name: Fetch the CNPG source bake file
         run: |
           mkdir -p source
-          curl -sSL https://raw.githubusercontent.com/cloudnative-pg/postgres-containers/main/docker-bake.hcl \
+          curl -fsSL --retry 3 --retry-all-errors https://raw.githubusercontent.com/cloudnative-pg/postgres-containers/main/docker-bake.hcl \
             -o source/docker-bake.hcl
 
       - name: Set up Docker Buildx
