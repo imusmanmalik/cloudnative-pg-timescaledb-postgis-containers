@@ -14,7 +14,7 @@ The images use the same [Docker Bake](https://docs.docker.com/build/bake/) setup
 - Based on the official operand image. It runs as `USER 26` with the upstream entrypoint, so it drops straight into a `Cluster`.
 - One TimescaleDB, Toolkit and PostGIS version is pinned per PostgreSQL major and distribution. A rebuild does not change extension versions.
 - PostgreSQL 14 to 18 on Debian **bookworm** and **trixie**, in **standard** and **system** flavours.
-- Every build-affecting PR builds three representative images and checks that each extension loads at its pinned version.
+- Every standard image is built for amd64 and arm64 and smoke-tested at its pinned extension versions, both on each PR that changes the build and before every build that publishes.
 - Renovate tracks the apt pins. A weekly bake rebuilds on the latest CloudNativePG base, so PostgreSQL minor and security updates come through.
 
 ## What is inside
@@ -138,13 +138,13 @@ EXPECTED_TIMESCALEDB=2.31.0 EXPECTED_TOOLKIT=1.27.0 EXPECTED_POSTGIS=3.7.0 \
   test/smoke.sh ghcr.io/imusmanmalik/timescaledb-postgis:17.11-3.7.0-standard-trixie
 ```
 
-`validate.yml` runs the same smoke test on every PR that changes the build. `e2e.yml` runs the checks weekly against a live CloudNativePG cluster on kind.
+`validate.yml` runs the same smoke test on every PR that changes the build, and `bake.yml` runs it before any build that publishes. A failed smoke test stops the build, so nothing reaches the registry. `e2e.yml` runs the checks weekly against a live CloudNativePG cluster on kind.
 
 ## How it stays up to date
 
 - Renovate (`renovate.json`) bumps the TimescaleDB and Toolkit pins from packagecloud, the PostGIS pin from PGDG, and the GitHub Actions.
 - Each pin bump opens a PR that runs the smoke tests and a full bake of all 18 images.
-- The weekly bake rebuilds on the current CloudNativePG base images, publishes them, and refreshes the image catalogs.
+- The weekly bake smoke-tests every standard image on the current CloudNativePG base images, then rebuilds, publishes, and refreshes the image catalogs.
 
 ## Credits
 

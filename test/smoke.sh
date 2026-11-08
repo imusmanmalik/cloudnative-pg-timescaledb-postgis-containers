@@ -10,6 +10,7 @@ docker run --rm --entrypoint bash \
   -e "EXPECTED_TIMESCALEDB=${EXPECTED_TIMESCALEDB:-}" \
   -e "EXPECTED_TOOLKIT=${EXPECTED_TOOLKIT:-}" \
   -e "EXPECTED_POSTGIS=${EXPECTED_POSTGIS:-}" \
+  -e "EXPECTED_PGROUTING=${EXPECTED_PGROUTING:-}" \
   -v "$DIR/smoke.sql:/smoke.sql:ro" \
   "$IMAGE" -c '
     set -eux
@@ -26,5 +27,6 @@ docker run --rm --entrypoint bash \
       -v expected_timescaledb="${EXPECTED_TIMESCALEDB}" \
       -v expected_toolkit="${EXPECTED_TOOLKIT}" \
       -v expected_postgis="${EXPECTED_POSTGIS}" \
+      -v expected_pgrouting="${EXPECTED_PGROUTING}" \
       -f /smoke.sql
   '

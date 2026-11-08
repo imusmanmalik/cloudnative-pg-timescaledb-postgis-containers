@@ -16,6 +16,10 @@
 \else
   \set expected_postgis ''
 \endif
+\if :{?expected_pgrouting}
+\else
+  \set expected_pgrouting ''
+\endif
 
 CREATE EXTENSION postgis;
 CREATE EXTENSION postgis_topology;
@@ -50,6 +54,12 @@ SELECT CASE
   WHEN :'expected_postgis' <> '' AND position(:'expected_postgis' in postgis_lib_version()) = 0
   THEN ('postgis lib ' || postgis_lib_version() || ', expected ' || :'expected_postgis')::int
   ELSE 0 END AS postgis_version_ok;
+
+SELECT CASE
+  WHEN :'expected_pgrouting' <> '' AND extversion <> :'expected_pgrouting'
+  THEN ('pgrouting version ' || extversion || ', expected ' || :'expected_pgrouting')::int
+  ELSE 0 END AS pgrouting_version_ok
+FROM pg_extension WHERE extname = 'pgrouting';
 
 -- TimescaleDB functional: hypertable + insert
 CREATE TABLE metrics(ts timestamptz NOT NULL, value double precision);
