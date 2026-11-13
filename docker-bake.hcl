@@ -31,11 +31,11 @@ variable "imageTypes" {
 postgisMatrix = {
   bookworm = {
     // renovate: suite=bookworm-pgdg depName=postgis
-    "3" = "3.7.0+dfsg-1.pgdg12+1"
+    "3" = "3.7.0+dfsg-1.pgdg12+2"
   }
   trixie = {
     // renovate: suite=trixie-pgdg depName=postgis
-    "3" = "3.7.0+dfsg-1.pgdg13+1"
+    "3" = "3.7.0+dfsg-1.pgdg13+2"
   }
 }
 
@@ -43,25 +43,25 @@ postgisMatrix = {
 // every PostgreSQL major. The major in depName is only a Renovate lookup key.
 pgRoutingMatrix = {
   // renovate: suite=bookworm-pgdg depName=postgresql-18-pgrouting
-  "bookworm" = "4.0.2-1.pgdg12+1"
+  "bookworm" = "4.0.2-1.pgdg12+2"
   // renovate: suite=trixie-pgdg depName=postgresql-18-pgrouting
-  "trixie" = "4.0.2-1.pgdg13+1"
+  "trixie" = "4.0.2-1.pgdg13+2"
 }
 
 // Since PostGIS 3.7 Debian ships address_standardizer outside the postgis package.
 addressStandardizerMatrix = {
   // renovate: suite=bookworm-pgdg depName=postgresql-18-address-standardizer
-  "bookworm" = "3.7.0-1.pgdg12+1"
+  "bookworm" = "3.7.0-1.pgdg12+2"
   // renovate: suite=trixie-pgdg depName=postgresql-18-address-standardizer
-  "trixie" = "3.7.0-1.pgdg13+1"
+  "trixie" = "3.7.0-1.pgdg13+2"
 }
 
 // Packaged for PostgreSQL 16 and later only.
 tigerGeocoderMatrix = {
   // renovate: suite=bookworm-pgdg depName=postgresql-18-postgis-tiger-geocoder
-  "bookworm" = "2025.2-1.pgdg12+1"
+  "bookworm" = "2025.2-1.pgdg12+2"
   // renovate: suite=trixie-pgdg depName=postgresql-18-postgis-tiger-geocoder
-  "trixie" = "2025.2-1.pgdg13+1"
+  "trixie" = "2025.2-1.pgdg13+2"
 }
 
 // TimescaleDB + toolkit apt pins per distro and PG major (packagecloud). A (distro, major)
