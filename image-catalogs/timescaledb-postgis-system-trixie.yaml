@@ -6,15 +6,15 @@ metadata:
     images.cnpg.io/family: timescaledb-postgis
     images.cnpg.io/type: system
     images.cnpg.io/os: trixie
-    images.cnpg.io/date: '20261109'
+    images.cnpg.io/date: '20261116'
     images.cnpg.io/publisher: cnpg.io
 spec:
   images:
   - major: 15
-    image: ghcr.io/imusmanmalik/timescaledb-postgis:15.19-3.7.0-202611091013-system-trixie@sha256:dc3a00aac9518507b50bd46bb8a43edbae66f3b717375cf6489b10ab3d4ab59e
+    image: ghcr.io/imusmanmalik/timescaledb-postgis:15.20-3.7.0-202611161016-system-trixie@sha256:54c50aeea14035d9f8f30cafcaec1e5f0d694bd1d18b61934348e2dda8677cd1
   - major: 16
-    image: ghcr.io/imusmanmalik/timescaledb-postgis:16.15-3.7.0-202611091013-system-trixie@sha256:776814b99ae9bf6ffb55829b726d79388feddb9fe30ad989802ae6008e283210
+    image: ghcr.io/imusmanmalik/timescaledb-postgis:16.16-3.7.0-202611161016-system-trixie@sha256:5eb412b0fb4876fc08d64867073122b65e2d6f49d5c2fa9f72256d7ee460190f
   - major: 17
-    image: ghcr.io/imusmanmalik/timescaledb-postgis:17.11-3.7.0-202611091013-system-trixie@sha256:d942b38e35d224be3f0966545f104b3882c75729043cc584ba84df879acda63f
+    image: ghcr.io/imusmanmalik/timescaledb-postgis:17.12-3.7.0-202611161016-system-trixie@sha256:589e47837c7f4305f495bca304e82fdebe9eba0108611b2a735b0a105218cca8
   - major: 18
-    image: ghcr.io/imusmanmalik/timescaledb-postgis:18.6-3.7.0-202611091013-system-trixie@sha256:6007d9ba2de341370e334f13b5a6b8b15b37e64a9af2b0c194c2019034ad7a66
+    image: ghcr.io/imusmanmalik/timescaledb-postgis:18.7-3.7.0-202611161015-system-trixie@sha256:c1aeb72d395f1adc228bb0f259a5a464cdc0e04fdef25423ee8d47cd99f576ba
