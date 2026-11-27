@@ -81,53 +81,53 @@ timescaledbMatrix = {
     }
     "15" = {
       // renovate: datasource=deb suite=bookworm depName=timescaledb-2-postgresql-15
-      tsdb = "2.28.3~debian12-1518"
+      tsdb = "2.28.5~debian12-1520"
       // renovate: datasource=deb suite=bookworm depName=timescaledb-toolkit-postgresql-15
       toolkit = "1:1.27.0~debian12"
     }
     "16" = {
       // renovate: datasource=deb suite=bookworm depName=timescaledb-2-postgresql-16
-      tsdb = "2.31.0~debian12-1615"
+      tsdb = "2.32.1~debian12-1616"
       // renovate: datasource=deb suite=bookworm depName=timescaledb-toolkit-postgresql-16
-      toolkit = "1:1.27.0~debian12"
+      toolkit = "1:1.29.0~debian12"
     }
     "17" = {
       // renovate: datasource=deb suite=bookworm depName=timescaledb-2-postgresql-17
-      tsdb = "2.31.0~debian12-1711"
+      tsdb = "2.32.1~debian12-1712"
       // renovate: datasource=deb suite=bookworm depName=timescaledb-toolkit-postgresql-17
-      toolkit = "1:1.27.0~debian12"
+      toolkit = "1:1.29.0~debian12"
     }
     "18" = {
       // renovate: datasource=deb suite=bookworm depName=timescaledb-2-postgresql-18
-      tsdb = "2.31.0~debian12-1806"
+      tsdb = "2.32.1~debian12-1807"
       // renovate: datasource=deb suite=bookworm depName=timescaledb-toolkit-postgresql-18
-      toolkit = "1:1.27.0~debian12"
+      toolkit = "1:1.29.0~debian12"
     }
   }
   trixie = {
     "15" = {
       // renovate: datasource=deb suite=trixie depName=timescaledb-2-postgresql-15
-      tsdb = "2.28.3~debian13-1518"
+      tsdb = "2.28.5~debian13-1520"
       // renovate: datasource=deb suite=trixie depName=timescaledb-toolkit-postgresql-15
       toolkit = "1:1.27.0~debian13"
     }
     "16" = {
       // renovate: datasource=deb suite=trixie depName=timescaledb-2-postgresql-16
-      tsdb = "2.31.0~debian13-1615"
+      tsdb = "2.32.1~debian13-1616"
       // renovate: datasource=deb suite=trixie depName=timescaledb-toolkit-postgresql-16
-      toolkit = "1:1.27.0~debian13"
+      toolkit = "1:1.29.0~debian13"
     }
     "17" = {
       // renovate: datasource=deb suite=trixie depName=timescaledb-2-postgresql-17
-      tsdb = "2.31.0~debian13-1711"
+      tsdb = "2.32.1~debian13-1712"
       // renovate: datasource=deb suite=trixie depName=timescaledb-toolkit-postgresql-17
-      toolkit = "1:1.27.0~debian13"
+      toolkit = "1:1.29.0~debian13"
     }
     "18" = {
       // renovate: datasource=deb suite=trixie depName=timescaledb-2-postgresql-18
-      tsdb = "2.31.0~debian13-1806"
+      tsdb = "2.32.1~debian13-1807"
       // renovate: datasource=deb suite=trixie depName=timescaledb-toolkit-postgresql-18
-      toolkit = "1:1.27.0~debian13"
+      toolkit = "1:1.29.0~debian13"
     }
   }
 }
